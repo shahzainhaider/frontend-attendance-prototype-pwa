@@ -8,6 +8,7 @@ import {
 import Homepage from "./pages/Homepage.jsx";
 import ChooseUser from "./pages/ChooseUser.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import AdminRegisterPage from "./pages/admin/AdminRegisterPage.jsx";
 
 const App = () => {
   return (
@@ -19,9 +20,9 @@ const App = () => {
           <Route path="/Adminlogin" element={<LoginPage role="Admin" />} />
           <Route path="/Studentlogin" element={<LoginPage role="Student" />} />
           <Route path="/Teacherlogin" element={<LoginPage role="Teacher" />} />
+          <Route path="/Adminregister" element={<AdminRegisterPage />} />
         </Routes>
       </Router>
-      {/* <Homepage /> */}
     </>
   );
 };
