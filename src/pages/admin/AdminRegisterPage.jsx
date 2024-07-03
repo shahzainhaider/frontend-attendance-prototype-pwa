@@ -60,7 +60,7 @@ const AdminRegisterPage = () => {
     const fields = { name, email, password, role, campusName };
     setLoader(true);
     try {
-      let res = await axios.post(`http://localhost:5000/AdminReg`,fields)
+      let res = await axios.post(`/AdminReg`,fields)
       if(res.status === 200){
         navigate('/Adminlogin')
       }
