@@ -22,14 +22,13 @@ import { GreenButton } from "../../components/buttonStyles";
 // import { registerUser } from "../../redux/userRelated/userHandle";
 import styled from "styled-components";
 import Popup from "../../components/Popup";
+import axios from "axios";
 
 const defaultTheme = createTheme();
 
 const AdminRegisterPage = () => {
-  // const dispatch = useDispatch()
   const navigate = useNavigate();
 
-  // const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
 
   const [toggle, setToggle] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -40,27 +39,38 @@ const AdminRegisterPage = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [adminNameError, setAdminNameError] = useState(false);
   const [schoolNameError, setSchoolNameError] = useState(false);
-  const role = "Admin";
+  const role = "Admin"
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
 
     const name = event.target.adminName.value;
-    const schoolName = event.target.schoolName.value;
+    const campusName = event.target.schoolName.value;
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    if (!name || !schoolName || !email || !password) {
+    if (!name || !campusName || !email || !password) {
       if (!name) setAdminNameError(true);
-      if (!schoolName) setSchoolNameError(true);
+      if (!campusName) setSchoolNameError(true);
       if (!email) setEmailError(true);
       if (!password) setPasswordError(true);
       return;
     }
 
-    const fields = { name, email, password, role, schoolName };
+    const fields = { name, email, password, role, campusName };
     setLoader(true);
-    // dispatch(registerUser(fields, role))
+    try {
+      let res = await axios.post(`http://localhost:5000/AdminReg`,fields)
+      if(res.status === 200){
+        navigate('/Adminlogin')
+      }
+      console.log(res)
+      setLoader(false)
+      
+    } catch (error) {
+      console.log(error)
+      setLoader(false)
+    }
   };
 
   const handleInputChange = (event) => {
