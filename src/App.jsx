@@ -12,14 +12,16 @@ import AdminRegisterPage from "./pages/admin/AdminRegisterPage.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import axios from "axios";
 
-axios.defaults.baseURL = 'https://api-attendance-management-system.vercel.app'
+axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
 // axios.defaults.baseURL = 'http://localhost:5000'
 const App = () => {
-  const [role , setRole] = useState(JSON.parse(localStorage.getItem("user"))?.role || null)
+  const [role, setRole] = useState(
+    JSON.parse(localStorage.getItem("user"))?.role || null
+  );
   return (
     <>
       <Router>
-        {!role  && (
+        {!role && (
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/choose" element={<ChooseUser visitor="normal" />} />
@@ -28,7 +30,10 @@ const App = () => {
               element={<ChooseUser visitor="guest" />}
             />
 
-            <Route path="/Adminlogin" element={<LoginPage role="Admin" setRole={setRole} />} />
+            <Route
+              path="/Adminlogin"
+              element={<LoginPage role="Admin" setRole={setRole} />}
+            />
             <Route
               path="/Studentlogin"
               element={<LoginPage role="Student" />}

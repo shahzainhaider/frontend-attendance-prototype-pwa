@@ -1,22 +1,31 @@
-import { Button, Grid, Modal, Paper, TextField } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Paper,
+  Select,
+  TextField,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-const ShowBatches = () => {
+const ShowStudents = () => {
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: '' })
+  const [data, setData] = useState({ name: "" });
   const [update, setUpdate] = useState(false);
-  const [batches, setBatches] = useState([])
+  const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
 
   useEffect(() => {
-    getAllBatches()
-
-  }, [])
+    getAllBatches();
+  }, []);
 
   const columns = [
     {
@@ -62,37 +71,32 @@ const ShowBatches = () => {
 
   const getAllBatches = async () => {
     try {
-      let res = axios.get('/getAllBatches')
-
+      let res = axios.get("/getAllBatches");
     } catch (error) {
-      console.log(error)
-
+      console.log(error);
     }
-  }
+  };
 
   const addBatch = async () => {
     try {
-      await axios.post('/addBatches')
-      getAllBatches()
-
+      await axios.post("/addBatches");
+      getAllBatches();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  const getSingleBatch = async()=>{
+  const getSingleBatch = async () => {
     try {
-      
     } catch (error) {
-      console.log(error)
-      
+      console.log(error);
     }
-  }
+  };
 
   return (
     <>
       <div className="mx-10">
-        <h2 className="text-4xl my-2 font-semibold">Batches</h2>
+        <h2 className="text-4xl my-2 font-semibold">Students</h2>
         <Button
           variant="outlined"
           className=""
@@ -114,9 +118,7 @@ const ShowBatches = () => {
           }}
         />
 
-
         {/* ADDING QUALIFICATION MODAL */}
-
 
         <Modal
           open={openAddAndUpdateModal}
@@ -151,6 +153,29 @@ const ShowBatches = () => {
                 label="Enter batch name"
                 variant="outlined"
               />
+            </div>
+            <div className="flex gap-10 mb-6 w-full">
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Select Your Batch
+                </InputLabel>
+                <Select
+                  sx={{
+                    // marginTop: 35,
+                    width: 250,
+                    // height: 50,
+                  }}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  // value={age}
+                  label="Age"
+                  // onChange={handleChange}
+                >
+                  <MenuItem>Batch 1</MenuItem>
+                  <MenuItem>Batch 2</MenuItem>
+                  <MenuItem>Batch 3</MenuItem>
+                </Select>
+              </FormControl>
             </div>
 
             <div
@@ -212,7 +237,7 @@ const ShowBatches = () => {
               <Button
                 onClick={"deleteQualification"}
                 variant="contained"
-              // sx={{ width: "50%"}}
+                // sx={{ width: "50%"}}
               >
                 YES
               </Button>
@@ -233,4 +258,4 @@ const ShowBatches = () => {
   );
 };
 
-export default ShowBatches;
+export default ShowStudents;
