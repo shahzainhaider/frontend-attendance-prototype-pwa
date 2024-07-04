@@ -1,19 +1,27 @@
 import { Button, Grid, Modal, Paper, TextField } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ShowBatches = () => {
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [data, setData] = useState({ name: '' })
   const [update, setUpdate] = useState(false);
+  const [batches, setBatches] = useState([])
   const [id, setId] = useState(null);
+
+  useEffect(() => {
+    getAllBatches()
+
+  }, [])
 
   const columns = [
     {
       field: "action",
-      width: 150,
+      width: 200,
       headerName: "Action",
       align: "center",
       renderCell: (params) => (
@@ -35,7 +43,7 @@ const ShowBatches = () => {
                 setUpdate(true);
                 setId(params.row.id);
                 let id = params.row.id;
-                // getSingleQualification(id);
+                getSingleQualification(id);
               }}
             >
               <FaRegEdit />
@@ -52,6 +60,35 @@ const ShowBatches = () => {
     },
   ];
 
+  const getAllBatches = async () => {
+    try {
+      let res = axios.get('/getAllBatches')
+
+    } catch (error) {
+      console.log(error)
+
+    }
+  }
+
+  const addBatch = async () => {
+    try {
+      await axios.post('/addBatches')
+      getAllBatches()
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getSingleBatch = async()=>{
+    try {
+      
+    } catch (error) {
+      console.log(error)
+      
+    }
+  }
+
   return (
     <>
       <div className="mx-10">
@@ -66,25 +103,21 @@ const ShowBatches = () => {
         </Button>
 
         <DataGrid
-          className=""
-          rows={[{ id: 1, batch: "12" }]}
+          className="bg-white"
+          rows={batches}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           sx={{
             width: "100%",
             height: "35em",
             marginTop: 2,
-            "& .MuiDataGrid-columnHeaders": {
-              bgcolor: "blue",
-              color: "black",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: "semi-bold",
-              fontSize: "20px",
-            },
           }}
         />
+
+
         {/* ADDING QUALIFICATION MODAL */}
+
+
         <Modal
           open={openAddAndUpdateModal}
           sx={{
@@ -111,7 +144,9 @@ const ShowBatches = () => {
 
             <div className="flex gap-10 mb-6">
               <TextField
-              fullWidth
+                value={data.name}
+                onChange={(e) => setData({ name: e.target.value })}
+                fullWidth
                 id="outlined-basic"
                 label="Enter batch name"
                 variant="outlined"
@@ -177,7 +212,7 @@ const ShowBatches = () => {
               <Button
                 onClick={"deleteQualification"}
                 variant="contained"
-                // sx={{ width: "50%"}}
+              // sx={{ width: "50%"}}
               >
                 YES
               </Button>
