@@ -16,6 +16,9 @@ import SideBar from "./SideBar";
 import AdminHomePage from "./AdminHomePage";
 import AccountMenu from "../../components/AccountMenu";
 import ShowBatches from "./batchRelated/ShowBatches";
+import ShowCourses from "./CourseRelated/ShowCourse";
+import ShowTeachers from "./teacherRelated/ShowTeacher";
+import ShowStudents from "./studentRelated/ShowStudent";
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false);
@@ -46,15 +49,13 @@ const AdminDashboard = () => {
             >
               <MenuIcon />
             </IconButton>
-            {
-                open && <div></div>
-            }
+            {open && <div></div>}
             <Typography
               component="h1"
               variant="h6"
               color="inherit"
-            //   noWrap
-            //   sx={{ flexGrow: 1 }}
+              //   noWrap
+              //   sx={{ flexGrow: 1 }}
               className=" inline bg-[#0a73be] py-2 px-6 rounded-3xl mt-2"
             >
               Admin Dashboard
@@ -65,8 +66,8 @@ const AdminDashboard = () => {
         <Drawer
           variant="permanent"
           open={open}
-        //   sx={{display:open? 'flex':'flex'}}
-          className={`${open?'flex':'flex md:none'}`}
+          //   sx={{display:open? 'flex':'flex'}}
+          className={`${open ? "flex" : "flex md:none"}`}
         >
           <Toolbar sx={styles.toolBarStyled}>
             <IconButton onClick={toggleDrawer}>
@@ -92,7 +93,7 @@ const AdminDashboard = () => {
             {/* <Route path="/Admin/notices" element={<ShowNotices />} /> */}
 
             {/* Subject */}
-            {/* <Route path="/Admin/subjects" element={<ShowSubjects />} /> */}
+            <Route path="/Admin/subjects" element={<ShowCourses />} />
             {/* <Route
               path="/Admin/subjects/subject/:classID/:subjectID"
               element={<ViewSubject />}
@@ -130,9 +131,9 @@ const AdminDashboard = () => {
             {/* <Route
               path="/Admin/addstudents"
               element={<AddStudent situation="Student" />}
-            />
+            /> */}
             <Route path="/Admin/students" element={<ShowStudents />} />
-            <Route
+            {/* <Route
               path="/Admin/students/student/:id"
               element={<ViewStudent />}
             /> */}
@@ -146,8 +147,8 @@ const AdminDashboard = () => {
             /> */}
 
             {/* Teacher */}
-            {/* <Route path="/Admin/teachers" element={<ShowTeachers />} />
-            <Route
+            <Route path="/Admin/teachers" element={<ShowTeachers />} />
+            {/* <Route
               path="/Admin/teachers/teacher/:id"
               element={<TeacherDetails />}
             />

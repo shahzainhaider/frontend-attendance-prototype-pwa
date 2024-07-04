@@ -35,7 +35,11 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Home" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/Admin/batches" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/batches"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <ClassOutlinedIcon
               color={
@@ -48,7 +52,11 @@ const SideBar = () => {
           <ListItemText primary="Batches" />
         </ListItemButton>
 
-        <ListItemButton component={Link} to="/Admin/subjects" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/subjects"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <AssignmentIcon
               color={
@@ -60,7 +68,11 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Courses" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/Admin/teachers" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/teachers"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <SupervisorAccountOutlinedIcon
               color={
@@ -72,7 +84,11 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Teachers" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/Admin/students" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/students"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <PersonOutlineIcon
               color={
@@ -84,7 +100,11 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Students" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/Admin/notices" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/notices"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <AnnouncementOutlinedIcon
               color={
@@ -96,7 +116,11 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Notices" />
         </ListItemButton>
-        <ListItemButton component={Link} to="/Admin/complains" className="gap-8 !pr-0">
+        <ListItemButton
+          component={Link}
+          to="/Admin/complains"
+          className="gap-8 !pr-0"
+        >
           <ListItemIcon className="!min-w-fit">
             <ReportIcon
               color={
