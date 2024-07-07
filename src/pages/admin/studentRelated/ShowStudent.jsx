@@ -18,7 +18,7 @@ import { MdDelete } from "react-icons/md";
 const ShowStudents = () => {
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: "", image: null });
+  const [data, setData] = useState({ name: "",email:'',password:'',batchId:'',courseId:'',contactNo:'', image: null });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
