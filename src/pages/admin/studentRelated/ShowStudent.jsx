@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
@@ -22,6 +22,12 @@ const ShowStudents = () => {
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
+  const imgFileRef = useRef(null);
+  const [image, setImage] = useState(null);
+  const [url, setUrl] = useState(null);
+  const initialValues = { studentImg : "default-image-url"};
+
+
 
   useEffect(() => {
     getAllBatches();
@@ -93,6 +99,10 @@ const ShowStudents = () => {
     }
   };
 
+  
+
+
+
   return (
     <>
       <div className="mx-10">
@@ -130,7 +140,7 @@ const ShowStudents = () => {
         >
           <Paper
             sx={{
-              width: "30%",
+              width: "50%",
               p: 5,
               display: "grid",
               justifyContent: "center",
@@ -141,42 +151,164 @@ const ShowStudents = () => {
             }}
           >
             <h2 className="text-4xl">
-              {update ? "Update Batch" : "Add Batch"}
+              {update ? "Update Student" : "Add Student"}
             </h2>
 
-            <div className="flex gap-10 mb-6">
-              <TextField
-                value={data.name}
-                onChange={(e) => setData({ name: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Enter batch name"
-                variant="outlined"
-              />
-            </div>
-            <div className="flex gap-10 mb-6 w-full">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Select Your Batch
-                </InputLabel>
-                <Select
-                  sx={{
-                    // marginTop: 35,
-                    width: 250,
-                    // height: 50,
-                  }}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  // value={age}
-                  label="Age"
-                  // onChange={handleChange}
-                >
-                  <MenuItem>Batch 1</MenuItem>
-                  <MenuItem>Batch 2</MenuItem>
-                  <MenuItem>Batch 3</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
+            
+
+            {/* Inputs start here */}
+                <div className="flex gap-20">
+                  <div className="flex gap-10 mb-6">
+                    <TextField
+                      value={data.name}
+                      onChange={(e) => setData({ name: e.target.value })}
+                      fullWidth
+                      id="outlined-basic"
+                      label="Name"
+                      variant="outlined"
+                    />
+                  </div>
+                  <div className="flex gap-10 mb-6">
+                    <TextField
+                      value={data.contact}
+                      onChange={(e) => setData({ contact: e.target.value })}
+                      fullWidth
+                      id="outlined-basic"
+                      label="Contact no"
+                      variant="outlined"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-10 mb-6">
+                  <TextField
+                    value={data.email}
+                    onChange={(e) => setData({ email: e.target.value })}
+                    fullWidth
+                    id="outlined-basic"
+                    label="Email"
+                    variant="outlined"
+                  />
+                </div>
+                <div className="flex gap-10 mb-6">
+                  <TextField
+                    value={data.password}
+                    onChange={(e) => setData({ password: e.target.value })}
+                    fullWidth
+                    id="outlined-basic"
+                    label="Password"
+                    variant="outlined"
+                  />
+                </div>
+                <div className="flex gap-6">
+                  <div className="flex gap-10 mb-6 w-full">
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Course ID
+                      </InputLabel>
+                      <Select
+                        sx={{
+                          // marginTop: 35,
+                          width: 250,
+                          // height: 50,
+                        }}
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        // value={age}
+                        label="Age"
+                        // onChange={handleChange}
+                      >
+                        <MenuItem>Batch 1</MenuItem>
+                        <MenuItem>Batch 2</MenuItem>
+                        <MenuItem>Batch 3</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div className="flex gap-10 mb-6 w-full">
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Batch ID
+                      </InputLabel>
+                      <Select
+                        sx={{
+                          // marginTop: 35,
+                          width: 250,
+                          // height: 50,
+                        }}
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        // value={age}
+                        label="Age"
+                        // onChange={handleChange}
+                      >
+                        <MenuItem>Batch 1</MenuItem>
+                        <MenuItem>Batch 2</MenuItem>
+                        <MenuItem>Batch 3</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                </div>       
+            {/* Inputs end here */}
+
+
+            <div
+                      style={{
+                        overflow: "hidden",
+                        width: "160px",
+                        height: "160px",
+                        gridTemplateColumns: "1fr",
+                        placeContent: "center",
+                        borderRadius: "0.375rem",
+                        border: "1px dashed #a0a0a0",
+                        position: "relative",
+                        marginBottom: "1.5rem",
+                      }}
+                    >
+                      <input
+                        ref={imgFileRef}
+                        style={{ display: "none" }}
+                        type="file"
+                        id="imgFile"
+                        onChange={(e) => {
+                          setImage(e.target.files[0]);
+                          setUrl(null);
+                        }}
+                      />
+                      <label
+                        style={{
+                          display: "flex",
+                          height: "100%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                        }}
+                        htmlFor="imgFile"
+                      >
+                        {image || initialValues.studentImg ? (
+                          <img
+                            name="studentImg"
+                            className="  w-full h-full object-cover"
+                            src={
+                              image
+                                ? URL.createObjectURL(image)
+                                : initialValues && initialValues.studentImg
+                                ? initialValues.studentImg
+                                : ""
+                            }
+                            alt="img"
+                          />
+                        ) : (
+                          <img
+                            src="https://cdn-icons-png.flaticon.com/128/1665/1665680.png"
+                            className="h-20 w-20"
+                          />
+                        )}
+                      </label>
+            </div>  
 
             <div
               className=""
