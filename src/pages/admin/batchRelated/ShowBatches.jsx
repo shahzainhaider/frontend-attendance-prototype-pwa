@@ -6,17 +6,17 @@ import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ShowBatches = () => {
+  const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: '' })
+  const [data, setData] = useState({ name: "", campusId });
   const [update, setUpdate] = useState(false);
-  const [batches, setBatches] = useState([])
+  const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
 
   useEffect(() => {
-    getAllBatches()
-
-  }, [])
+    getAllBatches();
+  }, []);
 
   const columns = [
     {
@@ -43,7 +43,7 @@ const ShowBatches = () => {
                 setUpdate(true);
                 setId(params.row.id);
                 let id = params.row.id;
-                getSingleQualification(id);
+                getSingleBatch(id);
               }}
             >
               <FaRegEdit />
@@ -53,7 +53,7 @@ const ShowBatches = () => {
       ),
     },
     {
-      field: `batch`,
+      field: `name`,
       width: 180,
       headerName: "Batch",
       align: "center",
@@ -62,32 +62,50 @@ const ShowBatches = () => {
 
   const getAllBatches = async () => {
     try {
-      let res = axios.get('/getAllBatches')
-
+      let res = await axios.get(`/getAllBatch/${campusId}`);
+      setBatches(res.data);
     } catch (error) {
-      console.log(error)
-
+      console.log(error);
     }
-  }
+  };
+
+  const updateBatch = async () => {
+    try {
+      const updated = await axios.patch(`/updateBatch/${id}`, data);
+      getAllBatches();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteBatch = async () => {
+    try {
+      const updated = await axios.delete(`/deleteBatch/${id}`);
+      getAllBatches();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const addBatch = async () => {
     try {
-      await axios.post('/addBatches')
-      getAllBatches()
-
+      let a = await axios.post("/addBatch", data);
+      console.log(data);
+      getAllBatches();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
-  const getSingleBatch = async()=>{
+  const getSingleBatch = async (id) => {
     try {
-      
+      let res = await axios.get(`/getSingleBatch/${id}`);
+      console.log(res);
+      setData({ ...data, name: res.data.name });
     } catch (error) {
-      console.log(error)
-      
+      console.log(error);
     }
-  }
+  };
 
   return (
     <>
@@ -114,10 +132,7 @@ const ShowBatches = () => {
           }}
         />
 
-
         {/* ADDING QUALIFICATION MODAL */}
-
-
         <Modal
           open={openAddAndUpdateModal}
           sx={{
@@ -145,7 +160,7 @@ const ShowBatches = () => {
             <div className="flex gap-10 mb-6">
               <TextField
                 value={data.name}
-                onChange={(e) => setData({ name: e.target.value })}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
                 fullWidth
                 id="outlined-basic"
                 label="Enter batch name"
@@ -161,8 +176,18 @@ const ShowBatches = () => {
                 gap: "20px",
               }}
             >
-              <Button type="submit" variant="contained" sx={{ width: "100%" }}>
-                ADD
+              <Button
+                onClick={() => {
+                  if (update) {
+                    updateBatch();
+                  } else {
+                    addBatch();
+                  }
+                }}
+                variant="contained"
+                sx={{ width: "100%" }}
+              >
+                {update ? "UPDATE" : "ADD"}
               </Button>
               <Button
                 sx={{ width: "100%" }}
@@ -210,9 +235,9 @@ const ShowBatches = () => {
               }}
             >
               <Button
-                onClick={"deleteQualification"}
+                onClick={deleteBatch}
                 variant="contained"
-              // sx={{ width: "50%"}}
+                // sx={{ width: "50%"}}
               >
                 YES
               </Button>

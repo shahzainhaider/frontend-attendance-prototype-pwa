@@ -12,8 +12,8 @@ import AdminRegisterPage from "./pages/admin/AdminRegisterPage.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import axios from "axios";
 
-axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
-// axios.defaults.baseURL = 'http://localhost:5000'
+// axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
+axios.defaults.baseURL = 'http://localhost:8080'
 const App = () => {
   const [role, setRole] = useState(
     JSON.parse(localStorage.getItem("user"))?.role || null

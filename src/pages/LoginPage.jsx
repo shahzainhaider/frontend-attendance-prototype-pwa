@@ -50,7 +50,8 @@ const LoginPage = ({ role, setRole }) => {
       }
       const fields = { rollNum, studentName, password };
       setLoader(true);
-      dispatch(loginUser(fields, role));
+      
+      // dispatch(loginUser(fields, role));
     } else {
       const email = event.target.email.value;
       const password = event.target.password.value;
