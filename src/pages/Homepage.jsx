@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { GreenButton } from "../components/buttonStyles.jsx";
 
 const Homepage = () => {
+  const currentUser =  (JSON.parse(localStorage.getItem("user")) || {}) || null;
+
   return (
     <div className="flex flex-col justify-center items-center h-screen">
       <img src={Logo} alt="Logo" />

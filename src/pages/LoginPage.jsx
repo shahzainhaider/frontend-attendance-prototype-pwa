@@ -12,10 +12,12 @@ import { AccountCircle, School, Group } from "@mui/icons-material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 // import { loginUser } from "../redux/userRelated/userHandle";
 import Popup from "../components/Popup";
+import axios from "axios";
 
-const LoginPage = ({ role }) => {
+const LoginPage = ({ role, setRole }) => {
   // const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // const { status, currentUser, response, currentRole } = useSelector(
   //   (state) => state.user
@@ -32,38 +34,49 @@ const LoginPage = ({ role }) => {
   // const [rollNumberError, setRollNumberError] = useState(false);
   // const [studentNameError, setStudentNameError] = useState(false);
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  //   if (role === "Student") {
-  //     const rollNum = event.target.rollNumber.value;
-  //     const studentName = event.target.studentName.value;
-  //     const password = event.target.password.value;
+    if (role === "Student") {
+      const rollNum = event.target.rollNumber.value;
+      const studentName = event.target.studentName.value;
+      const password = event.target.password.value;
 
-  //     if (!rollNum || !studentName || !password) {
-  //       if (!rollNum) setRollNumberError(true);
-  //       if (!studentName) setStudentNameError(true);
-  //       if (!password) setPasswordError(true);
-  //       return;
-  //     }
-  //     const fields = { rollNum, studentName, password };
-  //     setLoader(true);
-  //     dispatch(loginUser(fields, role));
-  //   } else {
-  //     const email = event.target.email.value;
-  //     const password = event.target.password.value;
+      if (!rollNum || !studentName || !password) {
+        if (!rollNum) setRollNumberError(true);
+        if (!studentName) setStudentNameError(true);
+        if (!password) setPasswordError(true);
+        return;
+      }
+      const fields = { rollNum, studentName, password };
+      setLoader(true);
+      
+      // dispatch(loginUser(fields, role));
+    } else {
+      const email = event.target.email.value;
+      const password = event.target.password.value;
 
-  //     if (!email || !password) {
-  //       if (!email) setEmailError(true);
-  //       if (!password) setPasswordError(true);
-  //       return;
-  //     }
+      if (!email || !password) {
+        if (!email) setEmailError(true);
+        if (!password) setPasswordError(true);
+        return;
+      }
 
-  //     const fields = { email, password };
-  //     setLoader(true);
-  //     dispatch(loginUser(fields, role));
-  //   }
-  // };
+      const fields = { email, password };
+      try {
+        let res = await axios.post(`/AdminLogin`, fields);
+        setRole('Admin')
+        localStorage.setItem("user", JSON.stringify(res.data));
+        if (res.status === 200) {
+          navigate("/Admin/dashboard");
+        }
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    }
+  };
+
 
   // const handleInputChange = (event) => {
   //   const { name } = event.target;
@@ -128,11 +141,7 @@ const LoginPage = ({ role }) => {
         <p className="text-center mb-6">
           Welcome back! Please enter your details
         </p>
-        <form
-          noValidate
-          // onSubmit={handleSubmit}
-          className="space-y-4"
-        >
+        <form noValidate onSubmit={handleSubmit} className="space-y-4">
           {role === "Student" ? (
             <>
               <TextField
