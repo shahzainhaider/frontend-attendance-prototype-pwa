@@ -1,30 +1,25 @@
-import {
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Paper,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Button, Grid, MenuItem, Modal, Paper, TextField } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-const ShowTeachers = () => {
+const ShowTeacher = () => {
+  const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: "" });
+  const [data, setData] = useState({ name: "", email: "", password: "", batchId: "", courseId: "", campusId });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [id, setId] = useState(null);
 
   useEffect(() => {
+    getAllTeachers();
     getAllBatches();
+    getAllCourses();
   }, []);
 
   const columns = [
@@ -51,8 +46,7 @@ const ShowTeachers = () => {
                 setOpenAddAndUpdateModal(true);
                 setUpdate(true);
                 setId(params.row.id);
-                let id = params.row.id;
-                getSingleQualification(id);
+                getSingleTeacher(params.row.id);
               }}
             >
               <FaRegEdit />
@@ -62,32 +56,92 @@ const ShowTeachers = () => {
       ),
     },
     {
-      field: `batch`,
+      field: "batch",
       width: 180,
       headerName: "Batch",
-      align: "center",
+      align: "left",
+    },
+    {
+      field: "course",
+      width: 180,
+      headerName: "Course",
+      align: "left",
+    },
+    {
+      field: "name",
+      width: 180,
+      headerName: "Name",
+      align: "left",
     },
   ];
 
   const getAllBatches = async () => {
     try {
-      let res = axios.get("/getAllBatches");
+      let res = await axios.get(`/getAllBatch/${campusId}`);
+      setBatches(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const addBatch = async () => {
+  const getAllCourses = async () => {
     try {
-      await axios.post("/addBatches");
-      getAllBatches();
+      let res = await axios.get(`/getAllCourse/${campusId}`);
+      setCourses(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getSingleBatch = async () => {
+  const getAllTeachers = async () => {
     try {
+      let res = await axios.get(`/getAllTeachers/${campusId}`);
+      setTeachers(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateTeacher = async () => {
+    try {
+      await axios.patch(`/updateTeacher/${id}`, data);
+      getAllTeachers();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteTeacher = async () => {
+    try {
+      await axios.delete(`/deleteTeacher/${id}`);
+      getAllTeachers();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addTeacher = async () => {
+    try {
+      await axios.post("/TeacherReg", data);
+      getAllTeachers();
+      setOpenAddAndUpdateModal(false); // Close the modal after adding a teacher
+      setData({ name: "", email: "", password: "", batchId: "", courseId: "", campusId }); // Clear the form
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSingleTeacher = async (id) => {
+    try {
+      let res = await axios.get(`/getSingleTeacher/${id}`);
+      setData({
+        name: res.data.name,
+        email: res.data.email,
+        password: res.data.password,
+        batchId: res.data.batchId,
+        courseId: res.data.courseId,
+        campusId: res.data.campusId,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -96,10 +150,9 @@ const ShowTeachers = () => {
   return (
     <>
       <div className="mx-10">
-        <h2 className="text-4xl my-2 font-semibold">Teacher</h2>
+        <h2 className="text-4xl my-2 font-semibold">Teachers</h2>
         <Button
           variant="outlined"
-          className=""
           onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
         >
           <FaPlus className="mx-2" />
@@ -108,7 +161,7 @@ const ShowTeachers = () => {
 
         <DataGrid
           className="bg-white"
-          rows={batches}
+          rows={teachers}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           sx={{
@@ -117,8 +170,6 @@ const ShowTeachers = () => {
             marginTop: 2,
           }}
         />
-
-        {/* ADDING QUALIFICATION MODAL */}
 
         <Modal
           open={openAddAndUpdateModal}
@@ -137,45 +188,63 @@ const ShowTeachers = () => {
               border: "3px solid",
               borderColor: "primary.main",
               borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
             }}
           >
             <h2 className="text-4xl">
-              {update ? "Update Batch" : "Add Batch"}
+              {update ? "Update Teacher" : "Add Teacher"}
             </h2>
 
-            <div className="flex gap-10 mb-6">
+            <div className="flex flex-col gap-10 mb-6">
               <TextField
                 value={data.name}
-                onChange={(e) => setData({ name: e.target.value })}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
                 fullWidth
                 id="outlined-basic"
-                label="Enter batch name"
+                label="Enter name"
                 variant="outlined"
               />
-            </div>
-            <div className="flex gap-10 mb-6 w-full">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Select Your Batch
-                </InputLabel>
-                <Select
-                  sx={{
-                    // marginTop: 35,
-                    width: 250,
-                    // height: 50,
-                  }}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  // value={age}
-                  label="Age"
-                  // onChange={handleChange}
-                >
-                  <MenuItem>Batch 1</MenuItem>
-                  <MenuItem>Batch 2</MenuItem>
-                  <MenuItem>Batch 3</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                value={data.email}
+                onChange={(e) => setData({ ...data, email: e.target.value })}
+                fullWidth
+                id="outlined-basic"
+                label="Enter email"
+                variant="outlined"
+              />
+              <TextField
+                value={data.password}
+                onChange={(e) => setData({ ...data, password: e.target.value })}
+                fullWidth
+                id="outlined-basic"
+                label="Enter password"
+                variant="outlined"
+              />
+              <TextField
+                fullWidth
+                select
+                label="Select batch"
+                value={data.batchId}
+                onChange={(e) => setData({ ...data, batchId: e.target.value })}
+              >
+                {batches.map((batch) => (
+                  <MenuItem key={batch.id} value={batch.id}>
+                    {batch.name}
+                  </MenuItem>)
+                )}
+              </TextField>
+              <TextField
+                fullWidth
+                select
+                label="Select course"
+                value={data.courseId}
+                onChange={(e) => setData({ ...data, courseId: e.target.value })}
+              >
+                {courses.map((course) => (
+                  <MenuItem key={course.id} value={course.id}>
+                    {course.name}
+                  </MenuItem>)
+                )}
+              </TextField>
             </div>
 
             <div
@@ -186,8 +255,18 @@ const ShowTeachers = () => {
                 gap: "20px",
               }}
             >
-              <Button type="submit" variant="contained" sx={{ width: "100%" }}>
-                ADD
+              <Button
+                onClick={() => {
+                  if (update) {
+                    updateTeacher();
+                  } else {
+                    addTeacher();
+                  }
+                }}
+                variant="contained"
+                sx={{ width: "100%" }}
+              >
+                {update ? "UPDATE" : "ADD"}
               </Button>
               <Button
                 sx={{ width: "100%" }}
@@ -203,7 +282,6 @@ const ShowTeachers = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE MODAL */}
         <Modal
           open={openDeleteModal}
           sx={{
@@ -221,10 +299,9 @@ const ShowTeachers = () => {
               border: "3px solid",
               borderColor: "primary.main",
               borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
             }}
           >
-            <h2>Do you want to delete this Qualification type?</h2>
+            <h2>Do you want to delete this teacher?</h2>
             <div
               className=""
               style={{
@@ -235,14 +312,12 @@ const ShowTeachers = () => {
               }}
             >
               <Button
-                onClick={"deleteQualification"}
+                onClick={deleteTeacher}
                 variant="contained"
-                // sx={{ width: "50%"}}
               >
                 YES
               </Button>
               <Button
-                // sx={{ width: "50%" }}
                 color="error"
                 onClick={() => {
                   setOpenDeleteModal(false);
@@ -258,4 +333,4 @@ const ShowTeachers = () => {
   );
 };
 
-export default ShowTeachers;
+export default ShowTeacher;

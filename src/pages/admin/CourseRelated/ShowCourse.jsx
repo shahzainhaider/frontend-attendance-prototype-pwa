@@ -16,14 +16,17 @@ import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ShowCourses = () => {
+  const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: "" });
+  const [data, setData] = useState({ name: "", batchId: "", campusId });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [id, setId] = useState(null);
 
   useEffect(() => {
+    getAllCourse()
     getAllBatches();
   }, []);
 
@@ -52,7 +55,7 @@ const ShowCourses = () => {
                 setUpdate(true);
                 setId(params.row.id);
                 let id = params.row.id;
-                getSingleQualification(id);
+                getSingleCourse(id);
               }}
             >
               <FaRegEdit />
@@ -67,27 +70,54 @@ const ShowCourses = () => {
       headerName: "Batch",
       align: "center",
     },
+    {
+      field: `name`,
+      width: 180,
+      headerName: "Course",
+      align: "center",
+    },
   ];
 
   const getAllBatches = async () => {
     try {
-      let res = axios.get("/getAllBatches");
+      let res = await axios.get(`/getAllBatch/${campusId}`);
+      setBatches(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const addBatch = async () => {
+  const getAllCourse = async () => {
     try {
-      await axios.post("/addBatches");
-      getAllBatches();
+      let res = await axios.get(`/getAllCourse/${campusId}`);
+      setCourses(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getSingleBatch = async () => {
+  const addCourse = async () => {
     try {
+      await axios.post("/addCourse", data);
+      getAllCourse();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSingleCourse = async (id) => {
+    try {
+      let res = await axios.get(`/getSingleCourse/${id}`);
+      setData({ ...data, name: res.data.name, batchId:res.data.batchId });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteCourse = async () => {
+    try {
+       await axios.delete(`/deleteCourse/${id}`);
+       getAllCourse();
     } catch (error) {
       console.log(error);
     }
@@ -108,13 +138,18 @@ const ShowCourses = () => {
 
         <DataGrid
           className="bg-white"
-          rows={batches}
+          rows={courses}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
+          disableRowSelectionOnClick
           sx={{
             width: "100%",
             height: "35em",
             marginTop: 2,
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor:'green',
+              color: "black",
+            },
           }}
         />
 
@@ -141,41 +176,34 @@ const ShowCourses = () => {
             }}
           >
             <h2 className="text-4xl">
-              {update ? "Update Batch" : "Add Batch"}
+              {update ? "Update Course" : "Add Course"}
             </h2>
 
             <div className="flex gap-10 mb-6">
               <TextField
-                value={data.name}
-                onChange={(e) => setData({ name: e.target.value })}
+                // disabled={loading}
                 fullWidth
-                id="outlined-basic"
-                label="Enter batch name"
-                variant="outlined"
-              />
+                select
+                label="Select batch"
+                value={data.batchId}
+                onChange={(e) => setData({ ...data, batchId: e.target.value })}
+              >
+                {batches.map((e, id) => (
+                  <MenuItem key={id} value={e.id}>
+                    {e.name}
+                  </MenuItem>)
+                )}
+              </TextField>
             </div>
             <div className="flex gap-10 mb-6 w-full">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Select Your Batch
-                </InputLabel>
-                <Select
-                  sx={{
-                    // marginTop: 35,
-                    width: 250,
-                    // height: 50,
-                  }}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  // value={age}
-                  label="Age"
-                  // onChange={handleChange}
-                >
-                  <MenuItem>Batch 1</MenuItem>
-                  <MenuItem>Batch 2</MenuItem>
-                  <MenuItem>Batch 3</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+                fullWidth
+                id="outlined-basic"
+                label="Enter course name"
+                variant="outlined"
+              />
             </div>
 
             <div
@@ -186,7 +214,17 @@ const ShowCourses = () => {
                 gap: "20px",
               }}
             >
-              <Button type="submit" variant="contained" sx={{ width: "100%" }}>
+              <Button
+                onClick={() => {
+                  if (update) {
+                    updateCourse();
+                  } else {
+                    addCourse();
+                  }
+                }}
+                variant="contained"
+                sx={{ width: "100%" }}
+              >
                 ADD
               </Button>
               <Button
@@ -235,7 +273,7 @@ const ShowCourses = () => {
               }}
             >
               <Button
-                onClick={"deleteQualification"}
+                onClick={deleteCourse}
                 variant="contained"
                 // sx={{ width: "50%"}}
               >
