@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,12 +12,16 @@ import AdminRegisterPage from "./pages/admin/AdminRegisterPage.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import axios from "axios";
 
-// axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
+// axios.defaults.baseURL = 'http://localhost:8080'
 const App = () => {
   const [role, setRole] = useState(
     JSON.parse(localStorage.getItem("user"))?.role || null
   );
+
+  useEffect(()=>{
+  
+  },[role])
   return (
     <>
       <Router>
@@ -51,7 +55,7 @@ const App = () => {
 
         {role === "Admin" && (
           <>
-            <AdminDashboard />
+            <AdminDashboard setRole={setRole} />
           </>
         )}
 

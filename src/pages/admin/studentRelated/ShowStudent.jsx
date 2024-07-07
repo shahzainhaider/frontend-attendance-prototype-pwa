@@ -16,16 +16,30 @@ import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ShowStudents = () => {
+  const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: "",email:'',password:'',batchId:'',courseId:'',contactNo:'', image: null });
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    batchId: "",
+    courseId: "",
+    contact: null,
+    image: null,
+    campusId,
+  });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
 
   useEffect(() => {
+    // getAllStudents()
     getAllBatches();
+    getAllCourses();
   }, []);
 
   const columns = [
@@ -53,7 +67,7 @@ const ShowStudents = () => {
                 setUpdate(true);
                 setId(params.row.id);
                 let id = params.row.id;
-                getSingleQualification(id);
+                // getSingleQualification(id);
               }}
             >
               <FaRegEdit />
@@ -63,39 +77,81 @@ const ShowStudents = () => {
       ),
     },
     {
-      field: `batch`,
+      field: `rollNum`,
       width: 180,
-      headerName: "Batch",
+      headerName: "Roll Number",
       align: "center",
     },
+    {
+      field: `name`,
+      width: 180,
+      headerName: "Name",
+      align: "center",
+    },
+    // {
+    //   field: `batch`,
+    //   width: 180,
+    //   headerName: "Batch",
+    //   align: "center",
+    // },
+    // {
+    //   field: `batch`,
+    //   width: 180,
+    //   headerName: "Batch",
+    //   align: "center",
+    // },
   ];
 
   const getAllBatches = async () => {
     try {
-      let res = axios.get("/getAllBatches");
+      let res = await axios.get(`/getAllBatch/${campusId}`);
+      setBatches(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const addBatch = async () => {
+  const getAllCourses = async () => {
     try {
-      await axios.post("/addBatches");
-      getAllBatches();
+      let res = await axios.get(`/getAllCourse/${campusId}`);
+      setCourses(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getSingleBatch = async () => {
+  const getAllStudents = async ()=>{
     try {
+      const res = axios.get(`/getAllStudents/${campusId}`)
+      setStudents(res.data)
+      
     } catch (error) {
-      console.log(error);
+      console.log(error.response)
+      
     }
-  };
+  }
 
-  const handleAddStudent = () => {
+
+
+
+
+  const handleAddStudent = async () => {
     console.log(data);
+    try {
+      await axios.post(`/StudentReg`, data);
+      setData({
+        name: "",
+        email: "",
+        password: "",
+        batchId: "",
+        courseId: "",
+        contact: null,
+        image: null,
+        campusId,
+      });
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -124,7 +180,7 @@ const ShowStudents = () => {
 
         <DataGrid
           className="bg-white"
-          rows={batches}
+          rows={students}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           sx={{
@@ -175,7 +231,9 @@ const ShowStudents = () => {
               <div className="flex gap-10 mb-6">
                 <TextField
                   value={data.contact}
-                  onChange={(e) => setData({ ...data, contact: e.target.value })}
+                  onChange={(e) =>
+                    setData({ ...data, contact: e.target.value })
+                  }
                   fullWidth
                   id="outlined-basic"
                   label="Contact no"
@@ -205,50 +263,38 @@ const ShowStudents = () => {
             </div>
             <div className="flex gap-6">
               <div className="flex gap-10 mb-6 w-full">
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Course ID
-                  </InputLabel>
-                  <Select
-                    sx={{
-                      // marginTop: 35,
-                      width: 250,
-                      // height: 50,
-                    }}
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    // value={age}
-                    label="Age"
-                    // onChange={handleChange}
-                  >
-                    <MenuItem>Batch 1</MenuItem>
-                    <MenuItem>Batch 2</MenuItem>
-                    <MenuItem>Batch 3</MenuItem>
-                  </Select>
-                </FormControl>
+                <TextField
+                  fullWidth
+                  select
+                  label="Select Batch"
+                  value={data.batchId}
+                  onChange={(e) =>
+                    setData({ ...data, batchId: e.target.value })
+                  }
+                >
+                  {batches.map((batch) => (
+                    <MenuItem key={batch.id} value={batch.id}>
+                      {batch.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </div>
               <div className="flex gap-10 mb-6 w-full">
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Batch ID
-                  </InputLabel>
-                  <Select
-                    sx={{
-                      // marginTop: 35,
-                      width: 250,
-                      // height: 50,
-                    }}
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    // value={age}
-                    label="Age"
-                    // onChange={handleChange}
-                  >
-                    <MenuItem>Batch 1</MenuItem>
-                    <MenuItem>Batch 2</MenuItem>
-                    <MenuItem>Batch 3</MenuItem>
-                  </Select>
-                </FormControl>
+                <TextField
+                  fullWidth
+                  select
+                  label="Select Course"
+                  value={data.courseId}
+                  onChange={(e) =>
+                    setData({ ...data, courseId: e.target.value })
+                  }
+                >
+                  {courses.map((course) => (
+                    <MenuItem key={course.id} value={course.id}>
+                      {course.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </div>
             </div>
             {/* Inputs end here */}
