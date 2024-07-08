@@ -200,7 +200,7 @@ const LoginPage = ({ role, setRole }) => {
             fullWidth
             name="password"
             label="Password"
-            // type={toggle ? "text" : "password"}
+            type={toggle ? "text" : "password"}
             id="password"
             autoComplete="current-password"
             // error={passwordError}

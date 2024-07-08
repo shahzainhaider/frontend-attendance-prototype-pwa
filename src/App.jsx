@@ -13,8 +13,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import axios from "axios";
 import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 
-axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
-// axios.defaults.baseURL = 'http://localhost:8080'
+// axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
+axios.defaults.baseURL = 'http://localhost:8080'
 const App = () => {
   const [role, setRole] = useState(
     JSON.parse(localStorage.getItem("user"))?.role || null
@@ -39,11 +39,11 @@ const App = () => {
             />
             <Route
               path="/Studentlogin"
-              element={<LoginPage role="Student" />}
+              element={<LoginPage role="Student" setRole={setRole}  />}
             />
             <Route
               path="/Teacherlogin"
-              element={<LoginPage role="Teacher" />}
+              element={<LoginPage role="Teacher" setRole={setRole} />}
             />
 
             <Route path="/Adminregister" element={<AdminRegisterPage />} />
