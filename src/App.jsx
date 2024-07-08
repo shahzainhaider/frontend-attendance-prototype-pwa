@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import AdminRegisterPage from "./pages/admin/AdminRegisterPage.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import axios from "axios";
+import StudentDashboard from "./pages/student/StudentDashboard.jsx";
 
 axios.defaults.baseURL = "https://api-attendance-management-system.vercel.app";
 // axios.defaults.baseURL = 'http://localhost:8080'
@@ -19,9 +20,7 @@ const App = () => {
     JSON.parse(localStorage.getItem("user"))?.role || null
   );
 
-  useEffect(()=>{
-  
-  },[role])
+  useEffect(() => {}, [role]);
   return (
     <>
       <Router>
@@ -52,24 +51,22 @@ const App = () => {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         )}
-
         {role === "Admin" && (
           <>
             <AdminDashboard setRole={setRole} />
           </>
         )}
-
-        {/* {currentRole === "Student" &&
-        <>
-          <StudentDashboard />
-        </>
-      }
-
-      {currentRole === "Teacher" &&
-        <>
-          <TeacherDashboard />
-        </>
-      } */}
+        {role === "Student" && (
+          <>
+            <StudentDashboard setRole={setRole} />
+          </>
+        )}
+        {/* {currentRole === "Teacher" && (
+          <>
+            <TeacherDashboard />
+          </>
+        )}{" "}
+        */}
       </Router>
     </>
   );
