@@ -9,20 +9,15 @@ const Homepage = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen">
       <img src={Logo} alt="Logo" />
-      <div className="flex items-center max-w-5xl gap-4">
+      <div className="flex items-center max-w-4xl gap-4">
         <div className="flex flex-col gap-3 text-center">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Welcome to
-            <br />
-            SMIT Student Portal
+          <h1 className="text-4xl text-center font-bold text-gray-900">
+            Attendance Management System
           </h1>
-          <p>
-            Streamline school management, class organization, and add students
-            and faculty. Seamlessly track attendance, assess performance, and
-            provide feedback. Access records, view marks, and communicate
-            effortlessly.
+          <p className="text-2xl">
+          Introducing our cutting-edge Attendance Management System, designed to make attendance tracking effortless and reliable. Whether you're online or offline, our system ensures seamless operation, allowing you to mark attendance anytime, anywhere.  
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex my-4 items-center gap-4">
             <Link to="/choose" className="w-full">
               <GreenButton variant="contained">Login</GreenButton>
             </Link>
