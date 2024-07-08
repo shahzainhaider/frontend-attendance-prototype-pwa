@@ -40,11 +40,11 @@ const App = () => {
             />
             <Route
               path="/Studentlogin"
-              element={<LoginPage role="Student" />}
+              element={<LoginPage role="Student" setRole={setRole}  />}
             />
             <Route
               path="/Teacherlogin"
-              element={<LoginPage role="Teacher" />}
+              element={<LoginPage role="Teacher" setRole={setRole} />}
             />
 
             <Route path="/Adminregister" element={<AdminRegisterPage />} />

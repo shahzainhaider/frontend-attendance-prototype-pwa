@@ -52,13 +52,14 @@ const LoginPage = ({ role, setRole }) => {
       const fields = { rollNum, studentName, password };
       try {
         let res = await axios.post(`/studentLogin`, fields);
+        console.log(res)
         setRole('Student')
         localStorage.setItem("user", JSON.stringify(res.data.data));
         if (res.status === 200) {
           navigate("/Student/dashboard");
         }
       } catch (error) {
-        console.log(error.response)
+        console.log(error)
       }
     } else {
       const email = event.target.email.value;
