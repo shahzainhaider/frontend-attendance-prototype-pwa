@@ -18,7 +18,7 @@ const LoginPage = ({ role, setRole }) => {
   // const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [toggle ,setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
 
   // const { status, currentUser, response, currentRole } = useSelector(
   //   (state) => state.user
@@ -52,14 +52,13 @@ const LoginPage = ({ role, setRole }) => {
       const fields = { rollNum, studentName, password };
       try {
         let res = await axios.post(`/studentLogin`, fields);
-        console.log(res)
-        setRole('Student')
+        setRole("Student");
         localStorage.setItem("user", JSON.stringify(res.data.data));
         if (res.status === 200) {
           navigate("/Student/dashboard");
         }
       } catch (error) {
-        console.log(error)
+        console.log(error.response);
       }
     } else {
       const email = event.target.email.value;
@@ -74,7 +73,7 @@ const LoginPage = ({ role, setRole }) => {
       const fields = { email, password };
       try {
         let res = await axios.post(`/AdminLogin`, fields);
-        setRole('Admin')
+        setRole("Admin");
         localStorage.setItem("user", JSON.stringify(res.data));
         if (res.status === 200) {
           navigate("/Admin/dashboard");
@@ -85,7 +84,6 @@ const LoginPage = ({ role, setRole }) => {
       }
     }
   };
-
 
   // const handleInputChange = (event) => {
   //   const { name } = event.target;
@@ -211,9 +209,7 @@ const LoginPage = ({ role, setRole }) => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                  onClick={() => setToggle(!toggle)}
-                  >
+                  <IconButton onClick={() => setToggle(!toggle)}>
                     {toggle ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
