@@ -3,7 +3,7 @@ import { Box, Avatar, Menu, MenuItem, ListItemIcon, Divider, IconButton, Tooltip
 import { Settings, Logout } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
-const AccountMenu = () => {
+const AccountMenu = ({setRole}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const currentRole =  (JSON.parse(localStorage.getItem("user")) || {}).role || null;
     const currentUser =  (JSON.parse(localStorage.getItem("user")) || {}) || null;
@@ -62,11 +62,14 @@ const AccountMenu = () => {
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={()=>{
+                    localStorage.removeItem('user')
+                    setRole(null)
+                    }}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
                     </ListItemIcon>
-                    <Link to="/logout">
+                    <Link to="">
                         Logout
                     </Link>
                 </MenuItem>

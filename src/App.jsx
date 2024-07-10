@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -18,6 +18,10 @@ const App = () => {
   const [role, setRole] = useState(
     JSON.parse(localStorage.getItem("user"))?.role || null
   );
+
+  useEffect(()=>{
+  
+  },[role])
   return (
     <>
       <Router>
@@ -36,11 +40,11 @@ const App = () => {
             />
             <Route
               path="/Studentlogin"
-              element={<LoginPage role="Student" />}
+              element={<LoginPage role="Student" setRole={setRole}  />}
             />
             <Route
               path="/Teacherlogin"
-              element={<LoginPage role="Teacher" />}
+              element={<LoginPage role="Teacher" setRole={setRole} />}
             />
 
             <Route path="/Adminregister" element={<AdminRegisterPage />} />
@@ -51,7 +55,7 @@ const App = () => {
 
         {role === "Admin" && (
           <>
-            <AdminDashboard />
+            <AdminDashboard setRole={setRole} />
           </>
         )}
 

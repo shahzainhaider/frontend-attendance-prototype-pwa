@@ -20,7 +20,7 @@ import ShowCourses from "./CourseRelated/ShowCourse";
 import ShowTeachers from "./teacherRelated/ShowTeacher";
 import ShowStudents from "./studentRelated/ShowStudent";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({setRole}) => {
   const [open, setOpen] = useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
             >
               Admin Dashboard
             </Typography>
-            <AccountMenu />
+            <AccountMenu setRole={setRole} />
           </Toolbar>
         </AppBar>
         <Drawer
