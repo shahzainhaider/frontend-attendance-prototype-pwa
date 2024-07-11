@@ -11,6 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useSelector } from "react-redux";
+import DownloadCard from "./components/DownloadCard";
 
 const StudentProfile = () => {
   // const { currentUser, response, error } = useSelector((state) => state.user);
@@ -26,7 +27,10 @@ const StudentProfile = () => {
 
   return (
     <>
-      <Container maxWidth="md">
+      <Container maxWidth="md" className="relative"> 
+        <div className="absolute -right-40 top-2">
+        <DownloadCard/>
+        </div>
         <StyledPaper elevation={3}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
