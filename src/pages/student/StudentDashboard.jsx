@@ -31,8 +31,8 @@ const StudentDashboard = () => {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar open={open} position="absolute">
-          <Toolbar sx={{ pr: "24px" }}>
+        <AppBar open={open} position="absolute" className="!bg-transparent !shadow-none">
+          <Toolbar sx={{ pr: "24px" }}  className="flex justify-between">
             <IconButton
               edge="start"
               color="inherit"
@@ -42,15 +42,18 @@ const StudentDashboard = () => {
                 marginRight: "36px",
                 ...(open && { display: "none" }),
               }}
+              className="!bg-[#98cc3b]"
             >
               <MenuIcon />
             </IconButton>
+            {open && <div></div>}
             <Typography
               component="h1"
               variant="h6"
               color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
+              //   noWrap
+              //   sx={{ flexGrow: 1 }}
+              className=" inline bg-[#0a73be] py-2 px-6 rounded-3xl mt-2"
             >
               Student Dashboard
             </Typography>
