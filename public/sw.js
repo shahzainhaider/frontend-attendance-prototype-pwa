@@ -41,6 +41,8 @@ self.addEventListener('fetch', (event) => {
             // Offline: Add request to queue
             const clonedRequest = event.request.clone();
             const body = await clonedRequest.json();
+            console.log(clonedRequest)
+            console.log(body)
             await addRequestToQueue({
               url: clonedRequest.url,
               method: clonedRequest.method,
