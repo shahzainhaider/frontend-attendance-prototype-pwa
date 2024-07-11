@@ -37,7 +37,7 @@ const ShowStudents = () => {
   const imgFileRef = useRef(null);
 
   useEffect(() => {
-    // getAllStudents()
+    getAllStudents()
     getAllBatches();
     getAllCourses();
   }, []);
@@ -122,7 +122,7 @@ const ShowStudents = () => {
 
   const getAllStudents = async ()=>{
     try {
-      const res = axios.get(`/getAllStudents/${campusId}`)
+      const res = await axios.get(`/getStudents/${campusId}`)
       setStudents(res.data)
       
     } catch (error) {
