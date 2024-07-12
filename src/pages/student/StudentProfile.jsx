@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   Card,
@@ -9,21 +9,27 @@ import {
   Avatar,
   Container,
   Paper,
+  Button,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import DownloadCard from "./components/DownloadCard";
 
 const StudentProfile = () => {
-  // const { currentUser, response, error } = useSelector((state) => state.user);
+  const [userData, setUserData] = useState(null);
 
-  // if (response) {
-  //   console.log(response);
-  // } else if (error) {
-  //   console.log(error);
-  // }
+  useEffect(() => {
+    // Fetch data from localStorage
+    const storedData = localStorage.getItem('user');
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      setUserData(parsedData); // Store the entire user data object
+    }
+  }, []);
 
-  // const sclassName = currentUser.sclassName
-  // const studentSchool = currentUser.school
+  const handleDownloadIDCard = () => {
+    // Implement ID card download logic here
+    alert('Download ID Card clicked');
+  };
 
   return (
     <>
