@@ -21,7 +21,7 @@ import ViewStdAttendance from "./ViewStdAttendance"; // Uncomment if needed
 import AccountMenu from "../../components/AccountMenu";
 import { AppBar, Drawer } from "../../components/styles";
 
-const StudentDashboard = () => {
+const StudentDashboard = ({setRole}) => {
   const [open, setOpen] = useState(true);
 
   const toggleDrawer = () => {
@@ -58,7 +58,7 @@ const StudentDashboard = () => {
             >
               Student Dashboard
             </Typography>
-            <AccountMenu />
+            <AccountMenu setRole={setRole} />
           </Toolbar>
         </AppBar>
         <Drawer

@@ -1,120 +1,111 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { useState } from "react";
-import { Grid, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { MdDelete } from "react-icons/md";
-import { FaRegEdit } from "react-icons/fa";
-
-const CustomToolbar = ({ selectedMonth, handleMonthChange }) => (
-  <Grid container justifyContent="flex-end" spacing={2} alignItems="center">
-    <Grid item>
-      <FormControl variant="outlined" size="small" sx={{ width: 100, margin: 2, }}>
-        <InputLabel>Month</InputLabel>
-        <Select
-          value={selectedMonth}
-          onChange={handleMonthChange}
-          label="Month"
-          sx={{ backgroundColor: 'white' }}
-        >
-          <MenuItem value="January">January</MenuItem>
-          <MenuItem value="February">February</MenuItem>
-          <MenuItem value="March">March</MenuItem>
-          <MenuItem value="April">April</MenuItem>
-          <MenuItem value="May">May</MenuItem>
-          <MenuItem value="June">June</MenuItem>
-          <MenuItem value="July">July</MenuItem>
-          <MenuItem value="August">August</MenuItem>
-          <MenuItem value="September">September</MenuItem>
-          <MenuItem value="October">October</MenuItem>
-          <MenuItem value="November">November</MenuItem>
-          <MenuItem value="December">December</MenuItem>
-        </Select>
-      </FormControl>
-    </Grid>
-  </Grid>
-);
+import { useState, useEffect } from "react";
+import {
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import axios from 'axios';
 
 const ViewStdAttendance = () => {
   const [batches, setBatches] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
+  const studentId = JSON.parse(localStorage.getItem('user')).id;
 
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-    // Filter batches based on the selected month
-    const filteredBatches = originalBatches.filter(batch => {
-      const batchDate = new Date(batch.date);
-      return batchDate.toLocaleString('default', { month: 'long' }) === event.target.value;
-    });
-    setBatches(filteredBatches);
+  useEffect(() => {
+    // Fetch initial data on component mount
+    if (selectedMonth !== "") {
+      getStudentMonthlyAttendance(studentId, selectedMonth);
+    }
+  }, [selectedMonth, studentId]);
+
+  const getStudentMonthlyAttendance = async (studentId, monthIndex) => {
+    try {
+      const response = await axios.get('/attendance/student-monthly-attendance', {
+        params: {
+          studentId,
+          monthIndex
+        }
+      });
+      
+      if (response.status === 200) {
+        setBatches(response.data);
+      } else {
+        console.error('Error fetching attendance:', response.data.message);
+        setBatches([]);
+      }
+    } catch (error) {
+      console.error('Error fetching attendance:', error);
+      setBatches([]);
+    }
   };
 
+  const handleMonthChange = (event) => {
+    const monthIndex = event.target.value;
+    setSelectedMonth(monthIndex);
+  };
+
+  const months = [
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' },
+  ];
+
   const columns = [
-    {
-      field: "date",
-      width: 150,
-      headerName: "Date",
-      align: "center",
-      renderCell: (params) => (
-        <>
-          <Grid columnSpacing={{ xs: 5, sm: 5, md: 5 }}>
-            <Button
-              color="error"
-              onClick={() => {
-                setId(params.row.id);
-                setOpenDeleteModal(!openDeleteModal);
-              }}
-            >
-              <MdDelete style={{ fontSize: "larger" }} />
-            </Button>
-            <Button
-              color="success"
-              onClick={() => {
-                setOpenAddAndUpdateModal(true);
-                setUpdate(true);
-                setId(params.row.id);
-                let id = params.row.id;
-                getSingleBatch(id);
-              }}
-            >
-              <FaRegEdit />
-            </Button>
-          </Grid>
-        </>
-      ),
-    },
-    {
-      field: "time",
-      width: 150,
-      headerName: "Time",
-      align: "center",
-    },
-    {
-      field: "attendanceStatus",
-      width: 150,
-      headerName: "Attendance Status",
-      align: "center",
-    },
-    {
-      field: "entryStatus",
-      width: 150,
-      headerName: "Entry Status",
-      align: "center",
-    },
+    { field: "date", width: 150, headerName: "Date", align: "left" },
+    { field: "time", width: 150, headerName: "Time", align: "left" },
+    { field: "attendance", width: 200, headerName: "Attendance Status", align: "left" },
   ];
 
   return (
     <>
-      <CustomToolbar selectedMonth={selectedMonth} handleMonthChange={handleMonthChange} />
-      <DataGrid
+    <div className="text-5xl font-semibold my-5">
+      Monthly Attendace
+    </div>
+    <Grid container spacing={2}>
+      <Grid item xs={2}>
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel id="month-label">Month</InputLabel>
+          <Select
+            labelId="month-label"
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            label="Month"
+            fullWidth
+          >
+            {months.map((month) => (
+              <MenuItem key={month.value} value={month.value}>
+                {month.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item xs={12}>
+        <DataGrid
         className="bg-white"
-        rows={batches}
-        columns={columns}
-        sx={{
-          width: "96%",
-          height: "35em",
-          margin: 2,
-        }}
-      />
+          rows={batches}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          autoHeight
+        />
+      </Grid>
+    </Grid>
+
     </>
+    
   );
 };
 
