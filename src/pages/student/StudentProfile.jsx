@@ -9,6 +9,7 @@ import {
   Avatar,
   Container,
   Paper,
+  Button,
 } from "@mui/material";
 
 const StudentProfile = () => {
@@ -23,9 +24,19 @@ const StudentProfile = () => {
     }
   }, []);
 
+  const handleDownloadIDCard = () => {
+    // Implement ID card download logic here
+    alert('Download ID Card clicked');
+  };
+
   return (
     <Container maxWidth="md">
-      <StyledPaper elevation={3}>
+      <Box display="flex" justifyContent="flex-end" mt={4}>
+        <Button variant="contained" color="primary" onClick={handleDownloadIDCard}>
+          Download ID Card
+        </Button>
+      </Box>
+      <StyledPaper elevation={3} sx={{ marginTop: 4, padding: 6 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Box display="flex" justifyContent="center">
@@ -36,43 +47,12 @@ const StudentProfile = () => {
           </Grid>
           <Grid item xs={12}>
             <Box display="flex" justifyContent="center">
-              <Typography variant="h5" component="h2" textAlign="center">
+              <Typography variant="h5" component="h2" textAlign="center" sx={{ marginBottom: 2 }}>
                 {/* Display student name */}
                 {userData && userData.name}
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="center">
-              <Typography
-                variant="subtitle1"
-                component="p"
-                textAlign="center"
-              >
-                Student Roll No:
-                {/* Display student roll number */}
-                {userData && userData.rollNum}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="center">
-              <Typography
-                variant="subtitle1"
-                component="p"
-                textAlign="center"
-              >
-                Class:
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </StyledPaper>
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Personal Information
-          </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1" component="p">
@@ -86,7 +66,7 @@ const StudentProfile = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1" component="p">
-                <strong>Email:</strong> 
+                <strong>Email:</strong>
                 {userData && userData.email}
               </Typography>
             </Grid>
@@ -102,8 +82,8 @@ const StudentProfile = () => {
               </Typography>
             </Grid>
           </Grid>
-        </CardContent>
-      </Card>
+        </Grid>
+      </StyledPaper>
     </Container>
   );
 };

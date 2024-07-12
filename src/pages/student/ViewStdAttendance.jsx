@@ -1,176 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Box,
-  Button,
-  Collapse,
-  Paper,
-  Table,
-  TableBody,
-  TableHead,
-  Typography,
-} from '@mui/material';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
-// import { getUserDetails } from '../../redux/userRelated/userHandle';
-// import {
-//   calculateOverallAttendancePercentage,
-//   calculateSubjectAttendancePercentage,
-//   groupAttendanceBySubject,
-// } from '../../components/attendanceCalculator';
-// import CustomBarChart from '../../components/CustomBarChart';
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import { StyledTableCell, StyledTableRow } from '../../components/styles';
+import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
+import { Grid, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { MdDelete } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
+
+const CustomToolbar = ({ selectedMonth, handleMonthChange }) => (
+  <Grid container justifyContent="flex-end" spacing={2} alignItems="center">
+    <Grid item>
+      <FormControl variant="outlined" size="small" sx={{ width: 100, margin: 2, }}>
+        <InputLabel>Month</InputLabel>
+        <Select
+          value={selectedMonth}
+          onChange={handleMonthChange}
+          label="Month"
+          sx={{ backgroundColor: 'white' }}
+        >
+          <MenuItem value="January">January</MenuItem>
+          <MenuItem value="February">February</MenuItem>
+          <MenuItem value="March">March</MenuItem>
+          <MenuItem value="April">April</MenuItem>
+          <MenuItem value="May">May</MenuItem>
+          <MenuItem value="June">June</MenuItem>
+          <MenuItem value="July">July</MenuItem>
+          <MenuItem value="August">August</MenuItem>
+          <MenuItem value="September">September</MenuItem>
+          <MenuItem value="October">October</MenuItem>
+          <MenuItem value="November">November</MenuItem>
+          <MenuItem value="December">December</MenuItem>
+        </Select>
+      </FormControl>
+    </Grid>
+  </Grid>
+);
 
 const ViewStdAttendance = () => {
-  const dispatch = useDispatch();
-  const { userDetails, currentUser, loading, response, error } = useSelector((state) => state.user);
-  const [openStates, setOpenStates] = useState({});
+  const [batches, setBatches] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
 
-  useEffect(() => {
-    dispatch(getUserDetails(currentUser?._id, 'Student'));
-  }, [dispatch, currentUser?._id]);
-
-  useEffect(() => {
-    if (userDetails) {
-      setSubjectAttendance(userDetails.attendance || []);
-    }
-  }, [userDetails]);
-
-  const [subjectAttendance, setSubjectAttendance] = useState([]);
-  const [selectedSection, setSelectedSection] = useState('table');
-
-  const attendanceBySubject = groupAttendanceBySubject(subjectAttendance);
-  const overallAttendancePercentage = calculateOverallAttendancePercentage(subjectAttendance);
-
-  const handleOpen = (subId) => {
-    setOpenStates((prevState) => ({
-      ...prevState,
-      [subId]: !prevState[subId],
-    }));
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.target.value);
+    // Filter batches based on the selected month
+    const filteredBatches = originalBatches.filter(batch => {
+      const batchDate = new Date(batch.date);
+      return batchDate.toLocaleString('default', { month: 'long' }) === event.target.value;
+    });
+    setBatches(filteredBatches);
   };
 
-  const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection);
-  };
-
-  const renderTableSection = () => (
-    <>
-      <Typography variant="h4" align="center" gutterBottom>
-        Attendance
-      </Typography>
-      <Table>
-        <TableHead>
-          <StyledTableRow>
-            <StyledTableCell>Subject</StyledTableCell>
-            <StyledTableCell>Present</StyledTableCell>
-            <StyledTableCell>Total Sessions</StyledTableCell>
-            <StyledTableCell>Attendance Percentage</StyledTableCell>
-            <StyledTableCell align="center">Actions</StyledTableCell>
-          </StyledTableRow>
-        </TableHead>
-        {Object.entries(attendanceBySubject).map(([subName, { present, allData, subId, sessions }], index) => {
-          const subjectAttendancePercentage = calculateSubjectAttendancePercentage(present, sessions);
-
-          return (
-            <TableBody key={index}>
-              <StyledTableRow key={subId}>
-                <StyledTableCell>{subName}</StyledTableCell>
-                <StyledTableCell>{present}</StyledTableCell>
-                <StyledTableCell>{sessions}</StyledTableCell>
-                <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button variant="contained" onClick={() => handleOpen(subId)}>
-                    {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-              <StyledTableRow key={`${subId}-details`}>
-                <StyledTableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                  <Collapse in={openStates[subId]} timeout="auto" unmountOnExit>
-                    <Box sx={{ margin: 1 }}>
-                      <Typography variant="h6" gutterBottom component="div">
-                        Attendance Details
-                      </Typography>
-                      <Table size="small" aria-label="purchases">
-                        <TableHead>
-                          <StyledTableRow>
-                            <StyledTableCell>Date</StyledTableCell>
-                            <StyledTableCell align="right">Status</StyledTableCell>
-                          </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                          {allData.map((data, index) => {
-                            const date = new Date(data.date);
-                            const dateString = date.toString() !== 'Invalid Date' ? date.toISOString().substring(0, 10) : 'Invalid Date';
-                            return (
-                              <StyledTableRow key={index}>
-                                <StyledTableCell component="th" scope="row">
-                                  {dateString}
-                                </StyledTableCell>
-                                <StyledTableCell align="right">{data.status}</StyledTableCell>
-                              </StyledTableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </Box>
-                  </Collapse>
-                </StyledTableCell>
-              </StyledTableRow>
-            </TableBody>
-          );
-        })}
-      </Table>
-      <div>
-        Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%
-      </div>
-    </>
-  );
-
-  const renderChartSection = () => (
-    <>
-      <CustomBarChart chartData={subjectData} dataKey="attendancePercentage" />
-    </>
-  );
+  const columns = [
+    {
+      field: "date",
+      width: 150,
+      headerName: "Date",
+      align: "center",
+      renderCell: (params) => (
+        <>
+          <Grid columnSpacing={{ xs: 5, sm: 5, md: 5 }}>
+            <Button
+              color="error"
+              onClick={() => {
+                setId(params.row.id);
+                setOpenDeleteModal(!openDeleteModal);
+              }}
+            >
+              <MdDelete style={{ fontSize: "larger" }} />
+            </Button>
+            <Button
+              color="success"
+              onClick={() => {
+                setOpenAddAndUpdateModal(true);
+                setUpdate(true);
+                setId(params.row.id);
+                let id = params.row.id;
+                getSingleBatch(id);
+              }}
+            >
+              <FaRegEdit />
+            </Button>
+          </Grid>
+        </>
+      ),
+    },
+    {
+      field: "time",
+      width: 150,
+      headerName: "Time",
+      align: "center",
+    },
+    {
+      field: "attendanceStatus",
+      width: 150,
+      headerName: "Attendance Status",
+      align: "center",
+    },
+    {
+      field: "entryStatus",
+      width: 150,
+      headerName: "Entry Status",
+      align: "center",
+    },
+  ];
 
   return (
     <>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          {subjectAttendance && Array.isArray(subjectAttendance) && subjectAttendance.length > 0 ? (
-            <>
-              {selectedSection === 'table' && renderTableSection()}
-              {selectedSection === 'chart' && renderChartSection()}
-
-              <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                  <BottomNavigationAction
-                    label="Table"
-                    value="table"
-                    icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                  />
-                  <BottomNavigationAction
-                    label="Chart"
-                    value="chart"
-                    icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                  />
-                </BottomNavigation>
-              </Paper>
-            </>
-          ) : (
-            <Typography variant="h6" gutterBottom component="div">
-              Currently You Have No Attendance Details
-            </Typography>
-          )}
-        </div>
-      )}
+      <CustomToolbar selectedMonth={selectedMonth} handleMonthChange={handleMonthChange} />
+      <DataGrid
+        className="bg-white"
+        rows={batches}
+        columns={columns}
+        sx={{
+          width: "96%",
+          height: "35em",
+          margin: 2,
+        }}
+      />
     </>
   );
 };
