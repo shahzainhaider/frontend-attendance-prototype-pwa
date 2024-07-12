@@ -90,7 +90,6 @@ const AdminHomePage = () => {
     },
   ];
 
-
   useEffect(() => {
     if (showScanner) {
       const scanner = new Html5QrcodeScanner(
@@ -117,14 +116,11 @@ const AdminHomePage = () => {
     }
   }, [showScanner]);
 
-  const getDailyAttendance = async() => {
-     try {
-      let res = await axios.get('/getDailyAttendance')
-      setDailyAttendance(res.data)
-     } catch (error) {
-      
-     }
-
+  const getDailyAttendance = async () => {
+    try {
+      let res = await axios.get("/getDailyAttendance");
+      setDailyAttendance(res.data);
+    } catch (error) {}
   };
 
   const handleScan = () => {
@@ -132,18 +128,22 @@ const AdminHomePage = () => {
   };
 
   const handleApiCall = (decodedText) => {
-    let data = JSON.parse(decodedText)
-    const currentDate = new Date().toISOString().split('T')[0]; 
-  
-    axios.post(`/addDailyAttendance`, {...data, date:currentDate,attendanceStatus:'Present' })
-    .then((response) => {
-      console.log("API response:", response);
-      speak({text:response.data})
-      getDailyAttendance()
-    })
-    .catch((error) => {
-      console.error("API error:", error.response);
-    });
+    let data = JSON.parse(decodedText);
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    axios
+      .post(`/addDailyAttendance`, {
+        ...data,
+        date: currentDate,
+        attendanceStatus: "Present",
+      })
+      .then((response) => {
+        speak({ text: response.data.message });
+        getDailyAttendance();
+      })
+      .catch((error) => {
+        console.error("API error:", error.response.data.message);
+      });
   };
 
   return (

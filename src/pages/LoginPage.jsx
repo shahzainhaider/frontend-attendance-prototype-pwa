@@ -72,7 +72,7 @@ const LoginPage = ({ role, setRole }) => {
 
       const fields = { email, password };
       try {
-        let res = await axios.post(`/AdminLogin`, fields);
+        let res = await axios.post(`/api/AdminLogin`, fields);
         setRole("Admin");
         localStorage.setItem("user", JSON.stringify(res.data));
         if (res.status === 200) {
