@@ -6,12 +6,14 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  CircularProgress, // Import CircularProgress for the loader
 } from "@mui/material";
 import axios from 'axios';
 
 const ViewStdAttendance = () => {
-  const [batches, setBatches] = useState([]);
+  const [attendance, setAttendance] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [loading, setLoading] = useState(false); // State to track loading status
   const studentId = JSON.parse(localStorage.getItem('user')).id;
 
   useEffect(() => {
@@ -22,6 +24,7 @@ const ViewStdAttendance = () => {
   }, [selectedMonth, studentId]);
 
   const getStudentMonthlyAttendance = async (studentId, monthIndex) => {
+    setLoading(true); // Set loading to true when starting API call
     try {
       const response = await axios.get('/attendance/student-monthly-attendance', {
         params: {
@@ -31,14 +34,16 @@ const ViewStdAttendance = () => {
       });
       
       if (response.status === 200) {
-        setBatches(response.data);
+        setAttendance(response.data);
       } else {
         console.error('Error fetching attendance:', response.data.message);
-        setBatches([]);
+        setAttendance([]);
       }
     } catch (error) {
       console.error('Error fetching attendance:', error);
-      setBatches([]);
+      setAttendance([]);
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or error
     }
   };
 
@@ -71,7 +76,7 @@ const ViewStdAttendance = () => {
   return (
     <>
     <div className="text-5xl font-semibold my-5">
-      Monthly Attendace
+      Monthly Attendance
     </div>
     <Grid container spacing={2}>
       <Grid item xs={2}>
@@ -93,19 +98,23 @@ const ViewStdAttendance = () => {
         </FormControl>
       </Grid>
       <Grid item xs={12}>
-        <DataGrid
-        className="bg-white"
-          rows={batches}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-          autoHeight
-        />
+        {loading ? (
+          <Grid container justifyContent="center">
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <DataGrid
+            className="bg-white"
+            rows={attendance}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            autoHeight
+          />
+        )}
       </Grid>
     </Grid>
-
     </>
-    
   );
 };
 

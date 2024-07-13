@@ -9,10 +9,7 @@ import {
   Avatar,
   Container,
   Paper,
-  Button,
 } from "@mui/material";
-import { useSelector } from "react-redux";
-import DownloadCard from "./components/DownloadCard";
 
 const StudentProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -26,112 +23,99 @@ const StudentProfile = () => {
     }
   }, []);
 
-  const handleDownloadIDCard = () => {
-    // Implement ID card download logic here
-    alert('Download ID Card clicked');
-  };
-
   return (
-    <>
-      <Container maxWidth="md" className="relative"> 
-        <div className="absolute -right-40 top-2">
-        <DownloadCard/>
-        </div>
-        <StyledPaper elevation={3}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="center">
-                <Avatar alt="Student Avatar" sx={{ width: 150, height: 150 }}>
-                  {/* {String(currentUser.name).charAt(0)} */}
+    <Container maxWidth="md">
+      <StyledPaper elevation={3}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center">
+              {userData && userData.image ? (
+                <Avatar
+                  alt="Student Avatar"
+                  src={userData.image}
+                  sx={{ width: 150, height: 150 }}
+                />
+              ) : (
+                <Avatar
+                  alt="Student Avatar"
+                  sx={{ width: 150, height: 150 }}
+                >
+                  {/* You can put a default icon or initials here */}
                 </Avatar>
-              </Box>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center">
+              <Typography variant="h5" component="h2" textAlign="center">
+                {/* Display student name */}
+                {userData && userData.name}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center">
+              <Typography
+                variant="subtitle1"
+                component="p"
+                textAlign="center"
+              >
+                Student Roll No:
+                {/* Display student roll number */}
+                {userData && userData.rollNum}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center">
+              <Typography
+                variant="subtitle1"
+                component="p"
+                textAlign="center"
+              >
+                Class:
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </StyledPaper>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Personal Information
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1" component="p">
+                <strong>Batch No:</strong>
+              </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="center">
-                <Typography variant="h5" component="h2" textAlign="center">
-                  {/* {currentUser.name} */}
-                </Typography>
-              </Box>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1" component="p">
+                <strong>Gender:</strong> Male
+              </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="center">
-                <Typography
-                  variant="subtitle1"
-                  component="p"
-                  textAlign="center"
-                >
-                  Student Roll No:
-                  {/* {currentUser.rollNum} */}
-                </Typography>
-              </Box>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1" component="p">
+                <strong>Email:</strong> 
+                {userData && userData.email}
+              </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="center">
-                <Typography
-                  variant="subtitle1"
-                  component="p"
-                  textAlign="center"
-                >
-                  Class:
-                  {/* {sclassName.sclassName} */}
-                </Typography>
-              </Box>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1" component="p">
+                <strong>Phone:</strong> (123) 456-7890
+              </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="center">
-                <Typography
-                  variant="subtitle1"
-                  component="p"
-                  textAlign="center"
-                >
-                  School:
-                  {/* {studentSchool.schoolName} */}
-                </Typography>
-              </Box>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle1" component="p">
+                <strong>Roll No:</strong>
+                {userData && userData.rollNum}
+              </Typography>
             </Grid>
           </Grid>
-        </StyledPaper>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Personal Information
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Date of Birth:</strong> January 1, 2000
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Gender:</strong> Male
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Email:</strong> john.doe@example.com
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Phone:</strong> (123) 456-7890
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Address:</strong> 123 Main Street, City, Country
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" component="p">
-                  <strong>Emergency Contact:</strong> (987) 654-3210
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Container>
-    </>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
