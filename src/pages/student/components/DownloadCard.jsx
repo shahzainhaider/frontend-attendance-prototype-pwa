@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import html2pdf from "html2pdf.js";
+import { Button } from "@mui/material";
 
 function DownloadCard() {
   const pdfRef = useRef();
@@ -85,9 +86,11 @@ function DownloadCard() {
           </div>
         </div>
       </div>
-        <button onClick={generatePDF} style={styles.button}>
+      <div className="absolute top-10 right-2">
+        <Button variant="contained" onClick={generatePDF}>
           Download Card
-        </button>
+        </Button>
+      </div>
     </>
   );
 }
@@ -119,17 +122,7 @@ const styles = {
   paragraph: {
     fontSize: "16px",
     color: "#666",
-  },
-  button: {
-    padding: "10px 20px",
-    fontSize: "16px",
-    color: "#fff",
-    backgroundColor: "#007bff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
-  },
+  }
 };
 
 export default DownloadCard;

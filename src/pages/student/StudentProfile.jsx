@@ -10,6 +10,7 @@ import {
   Container,
   Paper,
 } from "@mui/material";
+import DownloadCard from "./components/DownloadCard";
 
 const StudentProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -27,8 +28,9 @@ const StudentProfile = () => {
     <Container maxWidth="md">
       <StyledPaper elevation={3}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Box display="flex" justifyContent="center">
+          <Grid item xs={12} className="relative" >
+            <Box display="flex" className="justify-center">
+              <div className=""></div>
               {userData && userData.image ? (
                 <Avatar
                   alt="Student Avatar"
@@ -43,6 +45,7 @@ const StudentProfile = () => {
                   {/* You can put a default icon or initials here */}
                 </Avatar>
               )}
+              <DownloadCard/>
             </Box>
           </Grid>
           <Grid item xs={12}>
