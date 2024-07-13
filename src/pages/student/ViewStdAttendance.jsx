@@ -13,7 +13,7 @@ import axios from 'axios';
 const ViewStdAttendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [loading, setLoading] = useState(false);
   const studentId = JSON.parse(localStorage.getItem('user')).id;
 
   useEffect(() => {

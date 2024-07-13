@@ -14,9 +14,12 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { FaPlus, FaRegEdit, FaUser } from "react-icons/fa";
+import { CgMenuGridO } from "react-icons/cg";
 import { MdDelete } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const ShowStudents = () => {
+  const navigate = useNavigate()
   const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -54,38 +57,6 @@ const ShowStudents = () => {
       getStudentMonthlyAttendance(studentId, selectedMonth);
     }
   }, [selectedMonth, studentId]);
-
-  const getStudentMonthlyAttendance = async (studentId, monthIndex) => {
-    setLoading(true); // Set loading to true when starting API call
-    try {
-      const response = await axios.get(
-        "/attendance/student-monthly-attendance",
-        {
-          params: {
-            studentId,
-            monthIndex,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setAttendance(response.data);
-      } else {
-        console.error("Error fetching attendance:", response.data.message);
-        setAttendance([]);
-      }
-    } catch (error) {
-      console.error("Error fetching attendance:", error);
-      setAttendance([]);
-    } finally {
-      setLoading(false); // Set loading to false regardless of success or error
-    }
-  };
-
-  const handleMonthChange = (event) => {
-    const monthIndex = event.target.value;
-    setSelectedMonth(monthIndex);
-  };
 
   const columns = [
     {
@@ -132,12 +103,24 @@ const ShowStudents = () => {
       headerName: "Name",
       align: "center",
     },
-  ];
-
-  const attendanceColumns = [
-    { field: "date", width: 150, headerName: "Date", align: "left" },
-    { field: "time", width: 150, headerName: "Time", align: "left" },
-    { field: "attendance", width: 200, headerName: "Attendance Status", align: "left" },
+    {
+      field: 'details',
+      headerName: 'Details',
+      width: 180,
+      align: 'left',
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<CgMenuGridO />}
+          onClick={() =>{
+            navigate(`/Admin/students/attendance/${params.row.id}`)
+          }}
+        >
+          Attendance
+        </Button>
+      )
+    }
   ];
 
   const getAllBatches = async () => {
@@ -223,13 +206,6 @@ const ShowStudents = () => {
         <FaPlus className="mx-2" />
         Add
       </Button>
-      <Button
-        variant="outlined"
-        onClick={() => setShowAttendance(!showAttendance)}
-      >
-        <FaUser className="mx-2" />
-        { showAttendance ? "Hide Attendance" : "Show Attendance"}
-      </Button>
 
       <DataGrid
         className="bg-white"
@@ -243,48 +219,6 @@ const ShowStudents = () => {
         }}
       />
 
-      {/* ATTENDANCE TABLE */}
-      {showAttendance && (
-        <>
-          <div className="text-5xl font-semibold my-5">Monthly Attendance</div>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <FormControl variant="outlined" fullWidth>
-                <InputLabel id="month-label">Month</InputLabel>
-                <Select
-                  labelId="month-label"
-                  value={selectedMonth}
-                  onChange={handleMonthChange}
-                  label="Month"
-                  fullWidth
-                >
-                  {months.map((month) => (
-                    <MenuItem key={month.value} value={month.value}>
-                      {month.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              {loading ? (
-                <Grid container justifyContent="center">
-                  <CircularProgress />
-                </Grid>
-              ) : (
-                <DataGrid
-                  className="bg-white"
-                  rows={attendance}
-                  columns={attendanceColumns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5, 10, 20]}
-                  autoHeight
-                />
-              )}
-            </Grid>
-          </Grid>
-        </>
-      )}
 
       {/* ADDING STUDENT MODAL */}
       <Modal

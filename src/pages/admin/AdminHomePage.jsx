@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Button, CircularProgress, Grid } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import React, { useState, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
@@ -11,6 +11,7 @@ import axios from "axios";
 const AdminHomePage = () => {
   const { speak } = useSpeechSynthesis();
   const [showScanner, setShowScanner] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [dailyAttendance, setDailyAttendance] = useState([]);
 
   useEffect(() => {
@@ -119,9 +120,13 @@ const AdminHomePage = () => {
 
   const getDailyAttendance = async () => {
     try {
+      setLoading(true)
       let res = await axios.get("/getDailyAttendance");
       setDailyAttendance(res.data);
-    } catch (error) {}
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+    }
   };
 
   const handleScan = () => {
@@ -157,20 +162,28 @@ const AdminHomePage = () => {
         </Button>
       </div>
       {showScanner && <div id="reader" className="w-96" />}
-      <DataGrid
-        className="bg-white"
-        rows={dailyAttendance}
-        columns={columns}
-        slots={{ toolbar: GridToolbar }}
-        getRowClassName={(params) =>
-          params.row.attendance === "Present" ? "bg-green-100" : "bg-red-100"
-        }
-        sx={{
-          // width: "95%",
-          height: "45em",
-          marginTop: 4,
-        }}
-      />
+      {loading ? (
+          <Grid container justifyContent="center">
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <DataGrid
+            className="bg-white"
+            rows={dailyAttendance}
+            columns={columns}
+            pageSize={5}
+            slots={{ toolbar: GridToolbar }}
+            getRowClassName={(params)=>
+              params.row.attendance === "Present" ? 'bg-green-100':'bg-red-100'
+            }
+            rowsPerPageOptions={[5, 10, 20]}
+            // autoHeight
+            sx={{
+              marginTop:'30px',
+              height:'40rem'
+            }}
+          />
+        )}
     </div>
   );
 };

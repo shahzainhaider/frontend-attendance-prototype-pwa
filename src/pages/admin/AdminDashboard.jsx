@@ -19,6 +19,7 @@ import ShowBatches from "./batchRelated/ShowBatches";
 import ShowCourses from "./CourseRelated/ShowCourse";
 import ShowTeachers from "./teacherRelated/ShowTeacher";
 import ShowStudents from "./studentRelated/ShowStudent";
+import ViewAttendance from "./studentRelated/ViewAttendance";
 
 const AdminDashboard = ({setRole}) => {
   const [open, setOpen] = useState(false);
@@ -133,6 +134,7 @@ const AdminDashboard = ({setRole}) => {
               element={<AddStudent situation="Student" />}
             /> */}
             <Route path="/Admin/students" element={<ShowStudents />} />
+            <Route path="/Admin/students/attendance/:studentId" element={<ViewAttendance/>} />
             {/* <Route
               path="/Admin/students/student/:id"
               element={<ViewStudent />}
