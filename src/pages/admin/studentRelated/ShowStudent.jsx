@@ -23,7 +23,7 @@ const ShowStudents = () => {
   const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [showAttendance, setShowAttendance] = useState(false); // State to toggle attendance table
+  const [showAttendance, setShowAttendance] = useState(false); 
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -40,9 +40,8 @@ const ShowStudents = () => {
   const [courses, setCourses] = useState([]);
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
-  const [attendance, setAttendance] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [loading, setLoading] = useState(false);
   const studentId = JSON.parse(localStorage.getItem("user")).id;
   
   useEffect(() => {
@@ -143,9 +142,12 @@ const ShowStudents = () => {
 
   const getAllStudents = async () => {
     try {
+      setLoading(true)
       const res = await axios.get(`/getStudents/${campusId}`);
       setStudents(res.data);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log(error.response);
     }
   };
@@ -212,6 +214,13 @@ const ShowStudents = () => {
         rows={students}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
+        loading={loading}
+        slotProps={{
+          loadingOverlay: {
+            variant: 'linear-progress',
+            noRowsVariant: 'linear-progress',
+          },
+        }}
         sx={{
           width: "100%",
           height: "35em",
