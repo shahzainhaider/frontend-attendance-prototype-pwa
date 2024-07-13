@@ -14,8 +14,10 @@ import axios from 'axios';
 const ViewAttendance = () => {
     const {studentId} = useParams()
     console.log(studentId)
+    const month = new Date().getMonth()
+    console.log(month)
     const [attendance, setAttendance] = useState([]);
-    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState(month +1);
     const [loading, setLoading] = useState(false);
   
     useEffect(() => {
