@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { FaRegEdit } from "react-icons/fa";
+import moment from 'moment-timezone';
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 
@@ -129,7 +130,8 @@ const AdminHomePage = () => {
 
   const handleApiCall = (decodedText) => {
     let data = JSON.parse(decodedText);
-    const currentDate = new Date().toISOString().split("T")[0];
+    const currentDate = moment().tz("Asia/Karachi").format(); // Get current date in PST
+    console.log('date:', currentDate);
 
     axios
       .post(`/addDailyAttendance`, {

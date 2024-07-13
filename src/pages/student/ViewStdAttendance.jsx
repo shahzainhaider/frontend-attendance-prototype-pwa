@@ -1,4 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useState, useEffect } from "react";
 import {
   Grid,
@@ -108,6 +108,7 @@ const ViewStdAttendance = () => {
             rows={attendance}
             columns={columns}
             pageSize={5}
+            slots={{ toolbar: GridToolbar }}
             rowsPerPageOptions={[5, 10, 20]}
             autoHeight
           />

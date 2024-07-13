@@ -33,7 +33,7 @@ const StudentDashboard = ({setRole}) => {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar open={open} position="absolute" className="!bg-transparent !shadow-none">
-          <Toolbar sx={{ pr: "24px" }}  className="flex bg-blue-200/70 justify-between">
+          <Toolbar sx={{ pr: "24px" }}  className="flex bg-blue-200/70 -z-40 justify-between">
             <IconButton
               edge="start"
               color="inherit"
