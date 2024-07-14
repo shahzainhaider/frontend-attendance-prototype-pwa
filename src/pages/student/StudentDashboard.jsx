@@ -21,7 +21,7 @@ import ViewStdAttendance from "./ViewStdAttendance"; // Uncomment if needed
 import AccountMenu from "../../components/AccountMenu";
 import { AppBar, Drawer } from "../../components/styles";
 
-const StudentDashboard = () => {
+const StudentDashboard = ({setRole}) => {
   const [open, setOpen] = useState(true);
 
   const toggleDrawer = () => {
@@ -33,7 +33,7 @@ const StudentDashboard = () => {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar open={open} position="absolute" className="!bg-transparent !shadow-none">
-          <Toolbar sx={{ pr: "24px" }}  className="flex justify-between">
+          <Toolbar sx={{ pr: "24px" }}  className="flex bg-blue-200/70 justify-between">
             <IconButton
               edge="start"
               color="inherit"
@@ -58,7 +58,7 @@ const StudentDashboard = () => {
             >
               Student Dashboard
             </Typography>
-            <AccountMenu />
+            <AccountMenu setRole={setRole} />
           </Toolbar>
         </AppBar>
         <Drawer
