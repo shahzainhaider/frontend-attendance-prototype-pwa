@@ -131,10 +131,6 @@ const ShowStudents = () => {
     }
   }
 
-
-
-
-
   const handleAddStudent = async () => {
     console.log(data);
     try {

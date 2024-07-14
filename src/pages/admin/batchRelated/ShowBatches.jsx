@@ -89,7 +89,7 @@ const ShowBatches = () => {
 
   const addBatch = async () => {
     try {
-      let a = await axios.post("/addBatch", data);
+      let a = await axios.post("/api/addBatch", data);
       console.log(data);
       getAllBatches();
     } catch (error) {
