@@ -8,17 +8,19 @@ import {
   Paper,
   Select,
   TextField,
+  CircularProgress, // Import CircularProgress for the loader
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { FaPlus, FaRegEdit } from "react-icons/fa";
+import { FaPlus, FaRegEdit, FaUser } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const ShowStudents = () => {
   const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [showAttendance, setShowAttendance] = useState(false); // State to toggle attendance table
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -35,12 +37,55 @@ const ShowStudents = () => {
   const [courses, setCourses] = useState([]);
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
-
+  const [attendance, setAttendance] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [loading, setLoading] = useState(false); // State to track loading status
+  const studentId = JSON.parse(localStorage.getItem("user")).id;
+  
   useEffect(() => {
-    getAllStudents()
+    getAllStudents();
     getAllBatches();
     getAllCourses();
   }, []);
+
+
+  useEffect(() => {
+    if (selectedMonth !== "") {
+      getStudentMonthlyAttendance(studentId, selectedMonth);
+    }
+  }, [selectedMonth, studentId]);
+
+  const getStudentMonthlyAttendance = async (studentId, monthIndex) => {
+    setLoading(true); // Set loading to true when starting API call
+    try {
+      const response = await axios.get(
+        "/attendance/student-monthly-attendance",
+        {
+          params: {
+            studentId,
+            monthIndex,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setAttendance(response.data);
+      } else {
+        console.error("Error fetching attendance:", response.data.message);
+        setAttendance([]);
+      }
+    } catch (error) {
+      console.error("Error fetching attendance:", error);
+      setAttendance([]);
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or error
+    }
+  };
+
+  const handleMonthChange = (event) => {
+    const monthIndex = event.target.value;
+    setSelectedMonth(monthIndex);
+  };
 
   const columns = [
     {
@@ -67,7 +112,6 @@ const ShowStudents = () => {
                 setUpdate(true);
                 setId(params.row.id);
                 let id = params.row.id;
-                // getSingleQualification(id);
               }}
             >
               <FaRegEdit />
@@ -88,18 +132,12 @@ const ShowStudents = () => {
       headerName: "Name",
       align: "center",
     },
-    // {
-    //   field: `batch`,
-    //   width: 180,
-    //   headerName: "Batch",
-    //   align: "center",
-    // },
-    // {
-    //   field: `batch`,
-    //   width: 180,
-    //   headerName: "Batch",
-    //   align: "center",
-    // },
+  ];
+
+  const attendanceColumns = [
+    { field: "date", width: 150, headerName: "Date", align: "left" },
+    { field: "time", width: 150, headerName: "Time", align: "left" },
+    { field: "attendance", width: 200, headerName: "Attendance Status", align: "left" },
   ];
 
   const getAllBatches = async () => {
@@ -120,16 +158,14 @@ const ShowStudents = () => {
     }
   };
 
-  const getAllStudents = async ()=>{
+  const getAllStudents = async () => {
     try {
-      const res = await axios.get(`/getStudents/${campusId}`)
-      setStudents(res.data)
-      
+      const res = await axios.get(`/getStudents/${campusId}`);
+      setStudents(res.data);
     } catch (error) {
-      console.log(error.response)
-      
+      console.log(error.response);
     }
-  }
+  };
 
   const handleAddStudent = async () => {
     console.log(data);
@@ -161,221 +197,98 @@ const ShowStudents = () => {
     }
   };
 
+  const months = [
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' },
+  ];
+
   return (
     <div className="mx-10">
       <h2 className="text-4xl my-2 font-semibold">Students</h2>
       <Button
         variant="outlined"
         onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
+        style={{ marginRight: "8px" }}
       >
         <FaPlus className="mx-2" />
         Add
       </Button>
+      <Button
+        variant="outlined"
+        onClick={() => setShowAttendance(!showAttendance)}
+      >
+        <FaUser className="mx-2" />
+        { showAttendance ? "Hide Attendance" : "Show Attendance"}
+      </Button>
 
-        <DataGrid
-          className="bg-white"
-          rows={students}
-          columns={columns}
-          slots={{ toolbar: GridToolbar }}
-          sx={{
-            width: "100%",
-            height: "35em",
-            marginTop: 2,
-          }}
-        />
+      <DataGrid
+        className="bg-white"
+        rows={students}
+        columns={columns}
+        slots={{ toolbar: GridToolbar }}
+        sx={{
+          width: "100%",
+          height: "35em",
+          marginTop: 2,
+        }}
+      />
+
+      {/* ATTENDANCE TABLE */}
+      {showAttendance && (
+        <>
+          <div className="text-5xl font-semibold my-5">Monthly Attendance</div>
+          <Grid container spacing={2}>
+            <Grid item xs={2}>
+              <FormControl variant="outlined" fullWidth>
+                <InputLabel id="month-label">Month</InputLabel>
+                <Select
+                  labelId="month-label"
+                  value={selectedMonth}
+                  onChange={handleMonthChange}
+                  label="Month"
+                  fullWidth
+                >
+                  {months.map((month) => (
+                    <MenuItem key={month.value} value={month.value}>
+                      {month.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              {loading ? (
+                <Grid container justifyContent="center">
+                  <CircularProgress />
+                </Grid>
+              ) : (
+                <DataGrid
+                  className="bg-white"
+                  rows={attendance}
+                  columns={attendanceColumns}
+                  pageSize={5}
+                  rowsPerPageOptions={[5, 10, 20]}
+                  autoHeight
+                />
+              )}
+            </Grid>
+          </Grid>
+        </>
+      )}
 
       {/* ADDING STUDENT MODAL */}
-
-        <Modal
-          open={openAddAndUpdateModal}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Paper
-            sx={{
-              width: "50%",
-              p: 5,
-              display: "grid",
-              justifyContent: "center",
-              border: "3px solid",
-              borderColor: "primary.main",
-              borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
-            }}
-          >
-            <h2 className="text-4xl">
-              {update ? "Update Student" : "Add Student"}
-            </h2>
-
-            {/* Inputs start here */}
-            <div className="flex gap-20">
-              <div className="flex gap-10 mb-6">
-                <TextField
-                  value={data.name}
-                  onChange={(e) => setData({ ...data, name: e.target.value })}
-                  fullWidth
-                  id="outlined-basic"
-                  label="Name"
-                  variant="outlined"
-                />
-              </div>
-              <div className="flex gap-10 mb-6">
-                <TextField
-                  value={data.contact}
-                  onChange={(e) =>
-                    setData({ ...data, contact: e.target.value })
-                  }
-                  fullWidth
-                  id="outlined-basic"
-                  label="Contact no"
-                  variant="outlined"
-                />
-              </div>
-            </div>
-            <div className="flex gap-10 mb-6">
-              <TextField
-                value={data.email}
-                onChange={(e) => setData({ ...data, email: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Email"
-                variant="outlined"
-              />
-            </div>
-            <div className="flex gap-10 mb-6">
-              <TextField
-                value={data.password}
-                onChange={(e) => setData({ ...data, password: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Password"
-                variant="outlined"
-              />
-            </div>
-            <div className="flex gap-6">
-              <div className="flex gap-10 mb-6 w-full">
-                <TextField
-                  fullWidth
-                  select
-                  label="Select Batch"
-                  value={data.batchId}
-                  onChange={(e) =>
-                    setData({ ...data, batchId: e.target.value })
-                  }
-                >
-                  {batches.map((batch) => (
-                    <MenuItem key={batch.id} value={batch.id}>
-                      {batch.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-              <div className="flex gap-10 mb-6 w-full">
-                <TextField
-                  fullWidth
-                  select
-                  label="Select Course"
-                  value={data.courseId}
-                  onChange={(e) =>
-                    setData({ ...data, courseId: e.target.value })
-                  }
-                >
-                  {courses.map((course) => (
-                    <MenuItem key={course.id} value={course.id}>
-                      {course.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-            </div>
-            {/* Inputs end here */}
-
-            <div
-              style={{
-                overflow: "hidden",
-                width: "160px",
-                height: "160px",
-                gridTemplateColumns: "1fr",
-                placeContent: "center",
-                borderRadius: "0.375rem",
-                border: "1px dashed #a0a0a0",
-                position: "relative",
-                marginBottom: "1.5rem",
-              }}
-            >
-              <input
-                ref={imgFileRef}
-                style={{ display: "none" }}
-                type="file"
-                id="imgFile"
-                onChange={handleFileChange}
-              />
-              <label
-                style={{
-                  display: "flex",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                }}
-                htmlFor="imgFile"
-              >
-                {data.image ? (
-                  <img
-                    name="studentImg"
-                    className="  w-full h-full object-cover"
-                    src={data.image}
-                    alt="img"
-                  />
-                ) : (
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/1665/1665680.png"
-                    className="h-20 w-20"
-                  />
-                )}
-              </label>
-            </div>
-
-            <div
-              className=""
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "20px",
-              }}
-            >
-              <Button
-                onClick={handleAddStudent}
-                variant="contained"
-                sx={{ width: "100%" }}
-              >
-                ADD
-              </Button>
-              <Button
-                sx={{ width: "100%" }}
-                color="error"
-                onClick={() => {
-                  setUpdate(false);
-                  setOpenAddAndUpdateModal(false);
-                }}
-              >
-                cancel
-              </Button>
-            </div>
-          </Paper>
-        </Modal>
-
-      {/* DELETE MODAL */}
       <Modal
-        open={openDeleteModal}
+        open={openAddAndUpdateModal}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -384,7 +297,7 @@ const ShowStudents = () => {
       >
         <Paper
           sx={{
-            width: "60%",
+            width: "50%",
             p: 5,
             display: "grid",
             justifyContent: "center",
@@ -394,29 +307,182 @@ const ShowStudents = () => {
             gridTemplateRows: "2fr 2fr",
           }}
         >
-          <h2>Do you want to delete this Qualification type?</h2>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
-            <Button  variant="contained">
-              YES
-            </Button>
+      <h2 className="text-3xl text-center font-semibold">
+        {update ? "Update Student" : "Add Student"}
+      </h2>
+      <form>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <TextField
+              label="Name"
+              fullWidth
+              value={data.name}
+              onChange={(e) =>
+                setData({ ...data, name: e.target.value })
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Email"
+              fullWidth
+              value={data.email}
+              onChange={(e) =>
+                setData({ ...data, email: e.target.value })
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              value={data.password}
+              onChange={(e) =>
+                setData({ ...data, password: e.target.value })
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Contact"
+              fullWidth
+              value={data.contact}
+              onChange={(e) =>
+                setData({ ...data, contact: e.target.value })
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel id="batch-label">Batch</InputLabel>
+              <Select
+                labelId="batch-label"
+                value={data.batchId}
+                onChange={(e) =>
+                  setData({ ...data, batchId: e.target.value })
+                }
+              >
+                {batches.map((batch) => (
+                  <MenuItem key={batch._id} value={batch._id}>
+                    {batch.batchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel id="course-label">Course</InputLabel>
+              <Select
+                labelId="course-label"
+                value={data.courseId}
+                onChange={(e) =>
+                  setData({ ...data, courseId: e.target.value })
+                }
+              >
+                {courses.map((course) => (
+                  <MenuItem key={course._id} value={course._id}>
+                    {course.courseName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
             <Button
-              color="error"
-              onClick={() => setOpenDeleteModal(false)}
+              variant="outlined"
+              fullWidth
+              onClick={() => imgFileRef.current.click()}
             >
-              Cancel
+              Upload Image
             </Button>
-          </div>
-        </Paper>
-      </Modal>
-    </div>
-  );
+            <input
+              type="file"
+              accept="image/*"
+              ref={imgFileRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          marginTop={2}
+          gap={2}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddStudent}
+          >
+            {update ? "Update" : "Add"}
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setOpenAddAndUpdateModal(false)}
+          >
+            Cancel
+          </Button>
+        </Grid>
+      </form>
+    </Paper>
+  </Modal>
+
+  {/* DELETE STUDENT MODAL */}
+  <Modal
+    open={openDeleteModal}
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <Paper
+      sx={{
+        width: "30%",
+        p: 5,
+        display: "grid",
+        justifyContent: "center",
+        border: "3px solid",
+        borderColor: "primary.main",
+        borderRadius: "50px 0% 50px 0%",
+        gridTemplateRows: "2fr 2fr",
+      }}
+    >
+      <h2 className="text-2xl text-center font-semibold">
+        Confirm Delete
+      </h2>
+      <Grid
+        container
+        justifyContent="center"
+        marginTop={2}
+        gap={2}
+      >
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => {
+            console.log(`Deleting student with id ${id}`);
+            setOpenDeleteModal(false);
+          }}
+        >
+          Delete
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => setOpenDeleteModal(false)}
+        >
+          Cancel
+        </Button>
+      </Grid>
+    </Paper>
+  </Modal>
+</div>
+);
 };
 
 export default ShowStudents;
