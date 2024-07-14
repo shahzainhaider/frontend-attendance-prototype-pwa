@@ -1,18 +1,18 @@
 import {
   Button,
-  FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   Modal,
   Paper,
-  Select,
   TextField,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
+import CheckIcon from "@mui/icons-material/Check";
 import { MdDelete } from "react-icons/md";
 
 const ShowCourses = () => {
@@ -23,10 +23,13 @@ const ShowCourses = () => {
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [addAlertOpen, setAddAlertOpen] = useState(false);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
   const [id, setId] = useState(null);
 
   useEffect(() => {
-    getAllCourse()
+    getAllCourse();
     getAllBatches();
   }, []);
 
@@ -99,7 +102,8 @@ const ShowCourses = () => {
   const addCourse = async () => {
     try {
       await axios.post("/addCourse", data);
-      getAllCourse();
+      await getAllCourse();
+      setAddAlertOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -108,7 +112,17 @@ const ShowCourses = () => {
   const getSingleCourse = async (id) => {
     try {
       let res = await axios.get(`/getSingleCourse/${id}`);
-      setData({ ...data, name: res.data.name, batchId:res.data.batchId });
+      setData({ ...data, name: res.data.name, batchId: res.data.batchId });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateCourse = async () => {
+    try {
+      await axios.patch(`/updateCourse/${id}`, data);
+      await getAllCourse();
+      setUpdateAlertOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -116,8 +130,10 @@ const ShowCourses = () => {
 
   const deleteCourse = async () => {
     try {
-       await axios.delete(`/deleteCourse/${id}`);
-       getAllCourse();
+      await axios.delete(`/deleteCourse/${id}`);
+      await getAllCourse();
+      setDeleteAlertOpen(true);
+      setOpenDeleteModal(false);
     } catch (error) {
       console.log(error);
     }
@@ -125,6 +141,48 @@ const ShowCourses = () => {
 
   return (
     <>
+      <Snackbar
+        open={addAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setAddAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAddAlertOpen(false)}
+          severity={"success"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully added
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={updateAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setUpdateAlertOpen(false)}
+      >
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          onClose={() => setUpdateAlertOpen(false)}
+          severity={"success"}
+          sx={{ width: "100%" }}
+        >
+          Updated Successfully
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={deleteAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setDeleteAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setDeleteAlertOpen(false)}
+          severity={"error"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully deleted
+        </Alert>
+      </Snackbar>
       <div className="mx-10">
         <h2 className="text-4xl my-2 font-semibold">Courses</h2>
         <Button
@@ -147,13 +205,11 @@ const ShowCourses = () => {
             height: "35em",
             marginTop: 2,
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor:'green',
+              backgroundColor: "green",
               color: "black",
             },
           }}
         />
-
-        {/* ADDING QUALIFICATION MODAL */}
 
         <Modal
           open={openAddAndUpdateModal}
@@ -181,7 +237,6 @@ const ShowCourses = () => {
 
             <div className="flex gap-10 mb-6">
               <TextField
-                // disabled={loading}
                 fullWidth
                 select
                 label="Select batch"
@@ -191,8 +246,8 @@ const ShowCourses = () => {
                 {batches.map((e, id) => (
                   <MenuItem key={id} value={e.id}>
                     {e.name}
-                  </MenuItem>)
-                )}
+                  </MenuItem>
+                ))}
               </TextField>
             </div>
             <div className="flex gap-10 mb-6 w-full">
@@ -217,16 +272,23 @@ const ShowCourses = () => {
               <Button
                 onClick={() => {
                   if (update) {
-                    updateCourse();
+                    updateCourse().then(() => {
+                      setOpenAddAndUpdateModal(false);
+                      setUpdateAlertOpen(true);
+                    });
                   } else {
-                    addCourse();
+                    addCourse().then(() => {
+                      setOpenAddAndUpdateModal(false);
+                      setAddAlertOpen(true);
+                    });
                   }
                 }}
                 variant="contained"
                 sx={{ width: "100%" }}
               >
-                ADD
+                {update ? "UPDATE" : "ADD"}
               </Button>
+
               <Button
                 sx={{ width: "100%" }}
                 color="error"
@@ -241,7 +303,6 @@ const ShowCourses = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE MODAL */}
         <Modal
           open={openDeleteModal}
           sx={{
@@ -262,7 +323,7 @@ const ShowCourses = () => {
               gridTemplateRows: "2fr 2fr",
             }}
           >
-            <h2>Do you want to delete this Qualification type?</h2>
+            <h2>Do you want to delete this course?</h2>
             <div
               className=""
               style={{
@@ -272,15 +333,10 @@ const ShowCourses = () => {
                 gap: "20px",
               }}
             >
-              <Button
-                onClick={deleteCourse}
-                variant="contained"
-                // sx={{ width: "50%"}}
-              >
+              <Button onClick={deleteCourse} variant="contained">
                 YES
               </Button>
               <Button
-                // sx={{ width: "50%" }}
                 color="error"
                 onClick={() => {
                   setOpenDeleteModal(false);

@@ -1,4 +1,12 @@
-import { Button, Grid, Modal, Paper, TextField } from "@mui/material";
+import {
+  Button,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+  Alert,
+  Snackbar,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -13,6 +21,9 @@ const ShowBatches = () => {
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
+  const [addAlertOpen, setAddAlertOpen] = useState(false);
+  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     getAllBatches();
@@ -53,7 +64,7 @@ const ShowBatches = () => {
       ),
     },
     {
-      field: `name`,
+      field: "name",
       width: 180,
       headerName: "Batch",
       align: "center",
@@ -73,6 +84,7 @@ const ShowBatches = () => {
     try {
       const updated = await axios.patch(`/updateBatch/${id}`, data);
       getAllBatches();
+      setUpdateAlertOpen(true); // Show update alert
     } catch (error) {
       console.log(error);
     }
@@ -80,14 +92,17 @@ const ShowBatches = () => {
 
   const deleteBatch = async () => {
     try {
+      setOpenDeleteModal(false);
       const updated = await axios.delete(`/deleteBatch/${id}`);
       getAllBatches();
+      setDeleteAlertOpen(true); // Show delete alert
     } catch (error) {
       console.log(error);
     }
   };
 
   const addBatch = async () => {
+    setAddAlertOpen(true); // Show add alert
     try {
       let a = await axios.post("/api/addBatch", data);
       console.log(data);
@@ -109,8 +124,50 @@ const ShowBatches = () => {
 
   return (
     <>
+      <Snackbar
+        open={addAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setAddAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAddAlertOpen(false)}
+          severity={"success"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully added
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={updateAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setUpdateAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setUpdateAlertOpen(false)}
+          severity={"success"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully updated
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={deleteAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setDeleteAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setDeleteAlertOpen(false)}
+          severity={"error"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully deleted
+        </Alert>
+      </Snackbar>
       <div className="mx-10">
-        <h2 className="text-4xl my-2 font-semibold">Batches</h2>
+        <h2 className="text-4xl my-2 font-semibold">Batches </h2>
         <Button
           variant="outlined"
           className=""
@@ -180,8 +237,10 @@ const ShowBatches = () => {
                 onClick={() => {
                   if (update) {
                     updateBatch();
+                    setOpenAddAndUpdateModal(false);
                   } else {
                     addBatch();
+                    setOpenAddAndUpdateModal(false);
                   }
                 }}
                 variant="contained"
@@ -234,15 +293,10 @@ const ShowBatches = () => {
                 gap: "20px",
               }}
             >
-              <Button
-                onClick={deleteBatch}
-                variant="contained"
-                // sx={{ width: "50%"}}
-              >
+              <Button onClick={deleteBatch} variant="contained">
                 YES
               </Button>
               <Button
-                // sx={{ width: "50%" }}
                 color="error"
                 onClick={() => {
                   setOpenDeleteModal(false);

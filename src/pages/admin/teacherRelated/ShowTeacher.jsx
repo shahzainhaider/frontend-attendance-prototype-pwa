@@ -1,4 +1,13 @@
-import { Button, Grid, MenuItem, Modal, Paper, TextField } from "@mui/material";
+import {
+  Button,
+  Grid,
+  MenuItem,
+  Modal,
+  Paper,
+  TextField,
+  Alert,
+  Snackbar,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -9,11 +18,21 @@ const ShowTeacher = () => {
   const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [data, setData] = useState({ name: "", email: "", password: "", batchId: "", courseId: "", campusId });
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    batchId: "",
+    courseId: "",
+    campusId,
+  });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [addAlertOpen, setAddAlertOpen] = useState(false);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
   const [id, setId] = useState(null);
 
   useEffect(() => {
@@ -103,6 +122,7 @@ const ShowTeacher = () => {
   };
 
   const updateTeacher = async () => {
+    setUpdateAlertOpen(true); // Show update alert
     try {
       await axios.patch(`/updateTeacher/${id}`, data);
       getAllTeachers();
@@ -113,7 +133,9 @@ const ShowTeacher = () => {
 
   const deleteTeacher = async () => {
     try {
-      await axios.delete(`/deleteTeacher/${id}`);
+      setDeleteAlertOpen(true); // Show delete alert
+      setOpenDeleteModal(false);
+      await axios.delete(`/api/deleteTeacher/${id}`);
       getAllTeachers();
     } catch (error) {
       console.log(error);
@@ -122,10 +144,18 @@ const ShowTeacher = () => {
 
   const addTeacher = async () => {
     try {
+      setAddAlertOpen(true); // Show add alert
       await axios.post("/TeacherReg", data);
       getAllTeachers();
       setOpenAddAndUpdateModal(false); // Close the modal after adding a teacher
-      setData({ name: "", email: "", password: "", batchId: "", courseId: "", campusId }); // Clear the form
+      setData({
+        name: "",
+        email: "",
+        password: "",
+        batchId: "",
+        courseId: "",
+        campusId,
+      }); // Clear the form
     } catch (error) {
       console.log(error);
     }
@@ -149,6 +179,48 @@ const ShowTeacher = () => {
 
   return (
     <>
+      <Snackbar
+        open={addAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setAddAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAddAlertOpen(false)}
+          severity={"success"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully added
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={deleteAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setDeleteAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setDeleteAlertOpen(false)}
+          severity={"error"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully deleted
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={updateAlertOpen}
+        autoHideDuration={2000}
+        onClose={() => setUpdateAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setUpdateAlertOpen(false)}
+          severity={"info"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Successfully updated
+        </Alert>
+      </Snackbar>
       <div className="mx-10">
         <h2 className="text-4xl my-2 font-semibold">Teachers</h2>
         <Button
@@ -229,8 +301,8 @@ const ShowTeacher = () => {
                 {batches.map((batch) => (
                   <MenuItem key={batch.id} value={batch.id}>
                     {batch.name}
-                  </MenuItem>)
-                )}
+                  </MenuItem>
+                ))}
               </TextField>
               <TextField
                 fullWidth
@@ -242,8 +314,8 @@ const ShowTeacher = () => {
                 {courses.map((course) => (
                   <MenuItem key={course.id} value={course.id}>
                     {course.name}
-                  </MenuItem>)
-                )}
+                  </MenuItem>
+                ))}
               </TextField>
             </div>
 
@@ -259,8 +331,10 @@ const ShowTeacher = () => {
                 onClick={() => {
                   if (update) {
                     updateTeacher();
+                    setOpenAddAndUpdateModal(false);
                   } else {
                     addTeacher();
+                    setOpenAddAndUpdateModal(false);
                   }
                 }}
                 variant="contained"
@@ -311,10 +385,7 @@ const ShowTeacher = () => {
                 gap: "20px",
               }}
             >
-              <Button
-                onClick={deleteTeacher}
-                variant="contained"
-              >
+              <Button onClick={deleteTeacher} variant="contained">
                 YES
               </Button>
               <Button

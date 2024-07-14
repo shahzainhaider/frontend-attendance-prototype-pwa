@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GreenButton } from "../components/buttonStyles";
 // import { useDispatch, useSelector } from "react-redux";
 import {
+  Button,
   CircularProgress,
   Backdrop,
   IconButton,
   InputAdornment,
   TextField,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+
 import { AccountCircle, School, Group } from "@mui/icons-material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 // import { loginUser } from "../redux/userRelated/userHandle";
@@ -22,8 +26,15 @@ const LoginPage = ({ role, setRole }) => {
 
   // const { status, currentUser, response, currentRole } = useSelector(
   //   (state) => state.user
-  // );
-
+  // // );
+  // const handleClick = async () => {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000);
+  //   console.log("click");
+  // setTimeout(setLoading(false), 1000);
+  // };
   // const [toggle, setToggle] = useState(false);
   // const [guestLoader, setGuestLoader] = useState(false);
   // const [loader, setLoader] = useState(false);
@@ -50,6 +61,7 @@ const LoginPage = ({ role, setRole }) => {
         return;
       }
       const fields = { rollNum, studentName, password };
+      setLoading(true);
       try {
         let res = await axios.post(`/studentLogin`, fields);
         setRole("Student");
@@ -58,6 +70,7 @@ const LoginPage = ({ role, setRole }) => {
           navigate("/Student/dashboard");
         }
       } catch (error) {
+        setLoading(false);
         console.log(error.response);
       }
     } else {
@@ -71,6 +84,7 @@ const LoginPage = ({ role, setRole }) => {
       }
 
       const fields = { email, password };
+      setLoading(true);
       try {
         let res = await axios.post(`/api/AdminLogin`, fields);
         setRole("Admin");
@@ -225,15 +239,18 @@ const LoginPage = ({ role, setRole }) => {
               Forgot password?
             </Link>
           </div>
-          <button
+          <Button
+            variant="contained"
+            fullWidth="true"
+            color="primary"
             type="submit"
-            className="w-full py-2 bg-[#0A73BE] text-white rounded mt-3"
+            //onClick={}
+            disabled={loading}
+            startIcon={loading && <CircularProgress size={24} />}
           >
-            {/* {loader ?
-              <CircularProgress size={24} color="inherit" /> : */}
-            Login
-            {/* } */}
-          </button>
+            {loading ? "login..." : "Login"}
+          </Button>
+
           <button
             type="button"
             // onClick={guestModeHandler}
