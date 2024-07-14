@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { FaRegEdit } from "react-icons/fa";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 
@@ -119,13 +119,18 @@ const AdminHomePage = () => {
   }, [showScanner]);
 
   const getDailyAttendance = async () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // getMonth() returns month from 0-11, so we add 1
+    const date = currentDate.getDate();
+    const formattedDate = `${date}/${month}/${year}`;
     try {
-      setLoading(true)
-      let res = await axios.get("/getDailyAttendance");
+      setLoading(true);
+      let res = await axios.get("/getDailyAttendance",{params:{date:formattedDate}});
       setDailyAttendance(res.data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -135,13 +140,24 @@ const AdminHomePage = () => {
 
   const handleApiCall = (decodedText) => {
     let data = JSON.parse(decodedText);
-    const currentDate = moment().tz("Asia/Karachi").format(); // Get current date in PST
-    console.log('date:', currentDate);
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // getMonth() returns month from 0-11, so we add 1
+    const date = currentDate.getDate();
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    const formattedDate = `${date}/${month}/${year}`;
+    let formattedHours = hours % 12;
+    formattedHours = formattedHours ? formattedHours : 12; // the hour '0' should be '12'
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+    const formattedTime = `${formattedHours}:${formattedMinutes} ${ampm}`;
 
     axios
       .post(`/addDailyAttendance`, {
         ...data,
-        date: currentDate,
+        date: formattedDate,
+        time: formattedTime,
         attendanceStatus: "Present",
       })
       .then((response) => {
@@ -162,28 +178,29 @@ const AdminHomePage = () => {
         </Button>
       </div>
       {showScanner && <div id="reader" className="w-96" />}
-      {loading ? (
-          <Grid container justifyContent="center">
-            <CircularProgress />
-          </Grid>
-        ) : (
-          <DataGrid
-            className="bg-white"
-            rows={dailyAttendance}
-            columns={columns}
-            pageSize={5}
-            slots={{ toolbar: GridToolbar }}
-            getRowClassName={(params)=>
-              params.row.attendance === "Present" ? 'bg-green-100':'bg-red-100'
-            }
-            rowsPerPageOptions={[5, 10, 20]}
-            // autoHeight
-            sx={{
-              marginTop:'30px',
-              height:'40rem'
-            }}
-          />
-        )}
+        <DataGrid
+          className="bg-white"
+          rows={dailyAttendance}
+          columns={columns}
+          pageSize={5}
+          slots={{ toolbar: GridToolbar }}
+          loading={loading}
+          slotProps={{
+            loadingOverlay: {
+              variant: "linear-progress",
+              noRowsVariant: "linear-progress",
+            },
+          }}
+          getRowClassName={(params) =>
+            params.row.attendance === "Present" ? "bg-green-100" : "bg-red-100"
+          }
+          rowsPerPageOptions={[5, 10, 20]}
+          // autoHeight
+          sx={{
+            marginTop: "30px",
+            height: "40rem",
+          }}
+        />
     </div>
   );
 };
