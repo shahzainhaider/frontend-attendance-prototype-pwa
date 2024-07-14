@@ -29,7 +29,6 @@ const defaultTheme = createTheme();
 const AdminRegisterPage = () => {
   const navigate = useNavigate();
 
-
   const [toggle, setToggle] = useState(false);
   const [loader, setLoader] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -39,9 +38,9 @@ const AdminRegisterPage = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [adminNameError, setAdminNameError] = useState(false);
   const [schoolNameError, setSchoolNameError] = useState(false);
-  const role = "Admin"
+  const role = "Admin";
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const name = event.target.adminName.value;
@@ -60,16 +59,15 @@ const AdminRegisterPage = () => {
     const fields = { name, email, password, role, campusName };
     setLoader(true);
     try {
-      let res = await axios.post(`/AdminReg`,fields)
-      if(res.status === 200){
-        navigate('/Adminlogin')
+      let res = await axios.post(`/AdminReg`, fields);
+      if (res.status === 200) {
+        navigate("/Adminlogin");
       }
-      console.log(res)
-      setLoader(false)
-      
+      console.log(res);
+      setLoader(false);
     } catch (error) {
-      console.log(error)
-      setLoader(false)
+      console.log(error);
+      setLoader(false);
     }
   };
 
@@ -99,137 +97,136 @@ const AdminRegisterPage = () => {
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
-          <Box
-            sx={{
-              width:'30vw',
-              my: 8,
-              mx: 'auto',
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent:'center'
-            }}
-          >
-            <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>
-              Admin Register
-            </Typography>
-            <Typography align="center" variant="h7">
-              Create your own school by registering as an admin.
-              <br />
-              You will be able to add students and faculty and manage the
-              system.
-            </Typography>
-            <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 2 }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="adminName"
-                label="Enter your name"
-                name="adminName"
-                autoComplete="name"
-                autoFocus
-                error={adminNameError}
-                helperText={adminNameError && "Name is required"}
-                onChange={handleInputChange}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="schoolName"
-                label="Create your campus name"
-                name="schoolName"
-                autoComplete="off"
-                error={schoolNameError}
-                helperText={schoolNameError && "School name is required"}
-                onChange={handleInputChange}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Enter your email"
-                name="email"
-                autoComplete="email"
-                error={emailError}
-                helperText={emailError && "Email is required"}
-                onChange={handleInputChange}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type={toggle ? "text" : "password"}
-                id="password"
-                autoComplete="current-password"
-                error={passwordError}
-                helperText={passwordError && "Password is required"}
-                onChange={handleInputChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setToggle(!toggle)}>
-                        {toggle ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Grid
-                container
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-              </Grid>
-              <GreenButton
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                {loader ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  "Register"
-                )}
-              </GreenButton>
-              <Grid container>
-                <Grid>Already have an account?</Grid>
-                <Grid item sx={{ ml: 2 }}>
-                  <StyledLink to="/Adminlogin">Log in</StyledLink>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
+        <Box
           sx={{
-            backgroundImage: `url(${bgpic})`,
-            backgroundRepeat: "no-repeat",
-            backgroundColor: (t) =>
-              t.palette.mode === "light"
-                ? t.palette.grey[50]
-                : t.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            width: "30vw",
+            my: 8,
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-        />
+        >
+          <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>
+            Admin Register
+          </Typography>
+          <Typography align="center" variant="h7">
+            Create your own school by registering as an admin.
+            <br />
+            You will be able to add students and faculty and manage the system.
+          </Typography>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 2 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="adminName"
+              label="Enter your name"
+              name="adminName"
+              autoComplete="name"
+              autoFocus
+              error={adminNameError}
+              helperText={adminNameError && "Name is required"}
+              onChange={handleInputChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="schoolName"
+              label="Create your campus name"
+              name="schoolName"
+              autoComplete="off"
+              error={schoolNameError}
+              helperText={schoolNameError && "School name is required"}
+              onChange={handleInputChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Enter your email"
+              name="email"
+              autoComplete="email"
+              error={emailError}
+              helperText={emailError && "Email is required"}
+              onChange={handleInputChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type={toggle ? "text" : "password"}
+              id="password"
+              autoComplete="current-password"
+              error={passwordError}
+              helperText={passwordError && "Password is required"}
+              onChange={handleInputChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setToggle(!toggle)}>
+                      {toggle ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Grid
+              container
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+            </Grid>
+            <GreenButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2, mb: 2 }}
+            >
+              {loader ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Register"
+              )}
+            </GreenButton>
+            <Grid container>
+              <Grid>Already have an account?</Grid>
+              <Grid item sx={{ ml: 2 }}>
+                <StyledLink to="/Adminlogin">Log in</StyledLink>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Grid>
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={7}
+        sx={{
+          backgroundImage: `url(${bgpic})`,
+          backgroundRepeat: "no-repeat",
+          backgroundColor: (t) =>
+            t.palette.mode === "light"
+              ? t.palette.grey[50]
+              : t.palette.grey[900],
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
       <Popup
         message={message}
         setShowPopup={setShowPopup}
