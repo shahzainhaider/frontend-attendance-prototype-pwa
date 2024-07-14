@@ -18,7 +18,7 @@ import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const ShowStudents = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const campusId = JSON.parse(localStorage.getItem("user"))._id;
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -39,7 +39,7 @@ const ShowStudents = () => {
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     getAllStudents();
     getAllBatches();
@@ -92,23 +92,23 @@ const ShowStudents = () => {
       align: "center",
     },
     {
-      field: 'details',
-      headerName: 'Details',
+      field: "details",
+      headerName: "Details",
       width: 180,
-      align: 'left',
+      align: "left",
       renderCell: (params) => (
         <Button
           variant="outlined"
           color="primary"
           startIcon={<CgMenuGridO />}
-          onClick={() =>{
-            navigate(`/Admin/students/attendance/${params.row.id}`)
+          onClick={() => {
+            navigate(`/Admin/students/attendance/${params.row.id}`);
           }}
         >
           Attendance
         </Button>
-      )
-    }
+      ),
+    },
   ];
 
   const getAllBatches = async () => {
@@ -131,12 +131,12 @@ const ShowStudents = () => {
 
   const getAllStudents = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await axios.get(`/getStudents/${campusId}`);
       setStudents(res.data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.log(error.response);
     }
   };
@@ -190,17 +190,17 @@ const ShowStudents = () => {
           columns={columns}
           slots={{ toolbar: GridToolbar }}
           loading={loading}
-        slotProps={{
-          loadingOverlay: {
-            variant: 'linear-progress',
-            noRowsVariant: 'linear-progress',
-          },
-        }}
-        sx={{
-          width: "100%",
-          height: "35em",
-          marginTop: 2,
-        }}
+          slotProps={{
+            loadingOverlay: {
+              variant: "linear-progress",
+              noRowsVariant: "linear-progress",
+            },
+          }}
+          sx={{
+            width: "100%",
+            height: "35em",
+            marginTop: 2,
+          }}
         />
 
         {/* ADDING QUALIFICATION MODAL */}
