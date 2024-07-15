@@ -155,6 +155,7 @@ const ShowStudents = () => {
         image: null,
         campusId,
       });
+      getAllStudents();
     } catch (error) {
       console.log(error.response);
     }
