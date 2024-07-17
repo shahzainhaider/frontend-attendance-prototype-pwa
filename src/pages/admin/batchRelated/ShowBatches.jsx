@@ -104,7 +104,7 @@ const ShowBatches = () => {
   const addBatch = async () => {
     setAddAlertOpen(true); // Show add alert
     try {
-      let a = await axios.post("/addBatch", data);
+      let a = await axios.post("/api/addBatch", data);
       console.log(data);
       getAllBatches();
     } catch (error) {

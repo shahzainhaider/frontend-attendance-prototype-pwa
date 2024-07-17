@@ -1,18 +1,17 @@
 import {
   Button,
   Grid,
-  MenuItem,
   Modal,
   Paper,
   TextField,
   Alert,
   Snackbar,
+  MenuItem,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
-import CheckIcon from "@mui/icons-material/Check";
 import { MdDelete } from "react-icons/md";
 
 const ShowCourses = () => {
@@ -23,10 +22,10 @@ const ShowCourses = () => {
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [addAlertOpen, setAddAlertOpen] = useState(false);
-  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
-  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
   const [id, setId] = useState(null);
+  const [addAlertOpen, setAddAlertOpen] = useState(false);
+  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     getAllCourse();
@@ -68,13 +67,13 @@ const ShowCourses = () => {
       ),
     },
     {
-      field: `batch`,
+      field: "batch",
       width: 180,
       headerName: "Batch",
       align: "center",
     },
     {
-      field: `name`,
+      field: "name",
       width: 180,
       headerName: "Course",
       align: "center",
@@ -102,8 +101,8 @@ const ShowCourses = () => {
   const addCourse = async () => {
     try {
       await axios.post("/addCourse", data);
-      await getAllCourse();
-      setAddAlertOpen(true);
+      getAllCourse();
+      setAddAlertOpen(true); // Show add alert
     } catch (error) {
       console.log(error);
     }
@@ -122,7 +121,7 @@ const ShowCourses = () => {
     try {
       await axios.patch(`/updateCourse/${id}`, data);
       await getAllCourse();
-      setUpdateAlertOpen(true);
+      setUpdateAlertOpen(true); // Show update alert
     } catch (error) {
       console.log(error);
     }
@@ -131,9 +130,9 @@ const ShowCourses = () => {
   const deleteCourse = async () => {
     try {
       await axios.delete(`/deleteCourse/${id}`);
-      await getAllCourse();
-      setDeleteAlertOpen(true);
       setOpenDeleteModal(false);
+      getAllCourse();
+      setDeleteAlertOpen(true); // Show delete alert
     } catch (error) {
       console.log(error);
     }
@@ -161,12 +160,12 @@ const ShowCourses = () => {
         onClose={() => setUpdateAlertOpen(false)}
       >
         <Alert
-          icon={<CheckIcon fontSize="inherit" />}
           onClose={() => setUpdateAlertOpen(false)}
           severity={"success"}
+          variant="filled"
           sx={{ width: "100%" }}
         >
-          Updated Successfully
+          Successfully updated
         </Alert>
       </Snackbar>
       <Snackbar
@@ -211,6 +210,7 @@ const ShowCourses = () => {
           }}
         />
 
+        {/* ADDING QUALIFICATION MODAL */}
         <Modal
           open={openAddAndUpdateModal}
           sx={{
@@ -272,15 +272,12 @@ const ShowCourses = () => {
               <Button
                 onClick={() => {
                   if (update) {
-                    updateCourse().then(() => {
-                      setOpenAddAndUpdateModal(false);
-                      setUpdateAlertOpen(true);
-                    });
+                    updateCourse();
+                    setOpenAddAndUpdateModal(false);
                   } else {
-                    addCourse().then(() => {
-                      setOpenAddAndUpdateModal(false);
-                      setAddAlertOpen(true);
-                    });
+                    addCourse();
+                    setOpenAddAndUpdateModal(false);
+                    setAddAlertOpen(true); // Show add alert
                   }
                 }}
                 variant="contained"
@@ -288,7 +285,6 @@ const ShowCourses = () => {
               >
                 {update ? "UPDATE" : "ADD"}
               </Button>
-
               <Button
                 sx={{ width: "100%" }}
                 color="error"
@@ -303,6 +299,7 @@ const ShowCourses = () => {
           </Paper>
         </Modal>
 
+        {/* DELETE MODAL */}
         <Modal
           open={openDeleteModal}
           sx={{
@@ -323,26 +320,28 @@ const ShowCourses = () => {
               gridTemplateRows: "2fr 2fr",
             }}
           >
-            <h2>Do you want to delete this course?</h2>
+            <h2>Do you want to delete this Qualification type?</h2>
             <div
-              className=""
               style={{
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
                 gap: "20px",
               }}
             >
-              <Button onClick={deleteCourse} variant="contained">
-                YES
+              <Button
+                onClick={() => deleteCourse()}
+                variant="contained"
+                color="error"
+                sx={{ width: "100%" }}
+              >
+                Delete
               </Button>
               <Button
+                sx={{ width: "100%" }}
                 color="error"
-                onClick={() => {
-                  setOpenDeleteModal(false);
-                }}
+                onClick={() => setOpenDeleteModal(false)}
               >
-                cancel
+                Cancel
               </Button>
             </div>
           </Paper>
