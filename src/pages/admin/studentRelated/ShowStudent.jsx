@@ -8,6 +8,8 @@ import {
   Paper,
   Select,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
@@ -36,6 +38,9 @@ const ShowStudents = () => {
   const [batches, setBatches] = useState([]);
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -133,7 +138,7 @@ const ShowStudents = () => {
     try {
       setLoading(true);
       const res = await axios.get(`/getStudents/${campusId}`);
-      setStudents(res.data);
+      setStudents(res.data.reverse());
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -142,9 +147,8 @@ const ShowStudents = () => {
   };
 
   const handleAddStudent = async () => {
-    console.log(data);
     try {
-      await axios.post(`/StudentReg`, data);
+      let res = await axios.post(`/StudentReg`, data);
       setData({
         name: "",
         email: "",
@@ -155,7 +159,14 @@ const ShowStudents = () => {
         image: null,
         campusId,
       });
-      getAllStudents();
+      setStudents([res.data.data, ...students]);
+
+
+      setOpenAddAndUpdateModal(false);
+
+      setAlertMessage("Successfully added");
+      setAlertSeverity("success");
+      setAlertOpen(true);
     } catch (error) {
       console.log(error.response);
     }
@@ -172,15 +183,23 @@ const ShowStudents = () => {
     }
   };
 
+  const handleAddButtonClick = () => {
+    if (batches.length === 0 || courses.length === 0) {
+      setAlertMessage(
+        "Please create batches and courses before adding a student."
+      );
+      setAlertSeverity("warning");
+      setAlertOpen(true);
+    } else {
+      setOpenAddAndUpdateModal(true);
+    }
+  };
+
   return (
     <>
       <div className="mx-10">
         <h2 className="text-4xl my-2 font-semibold">Students</h2>
-        <Button
-          variant="outlined"
-          className=""
-          onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
-        >
+        <Button variant="outlined" className="" onClick={handleAddButtonClick}>
           <FaPlus className="mx-2" />
           Add
         </Button>
@@ -205,7 +224,6 @@ const ShowStudents = () => {
         />
 
         {/* ADDING QUALIFICATION MODAL */}
-
         <Modal
           open={openAddAndUpdateModal}
           sx={{
@@ -393,56 +411,20 @@ const ShowStudents = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE MODAL */}
-        <Modal
-          open={openDeleteModal}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={3000}
+          onClose={() => setAlertOpen(false)}
         >
-          <Paper
-            sx={{
-              width: "60%",
-              p: 5,
-              display: "grid",
-              justifyContent: "center",
-              border: "3px solid",
-              borderColor: "primary.main",
-              borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
-            }}
+          <Alert
+            onClose={() => setAlertOpen(false)}
+            severity={alertSeverity}
+            variant="filled"
+            sx={{ width: "100%" }}
           >
-            <h2>Do you want to delete this Qualification type?</h2>
-            <div
-              className=""
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "20px",
-              }}
-            >
-              <Button
-                onClick={"deleteQualification"}
-                variant="contained"
-                // sx={{ width: "50%"}}
-              >
-                YES
-              </Button>
-              <Button
-                // sx={{ width: "50%" }}
-                color="error"
-                onClick={() => {
-                  setOpenDeleteModal(false);
-                }}
-              >
-                cancel
-              </Button>
-            </div>
-          </Paper>
-        </Modal>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
       </div>
     </>
   );
