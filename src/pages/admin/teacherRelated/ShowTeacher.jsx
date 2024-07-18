@@ -33,6 +33,9 @@ const ShowTeacher = () => {
   const [addAlertOpen, setAddAlertOpen] = useState(false);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [id, setId] = useState(null);
 
   useEffect(() => {
@@ -147,6 +150,7 @@ const ShowTeacher = () => {
       setAddAlertOpen(true); // Show add alert
       await axios.post("/TeacherReg", data);
       getAllTeachers();
+     
       setOpenAddAndUpdateModal(false); // Close the modal after adding a teacher
       setData({
         name: "",
@@ -174,6 +178,16 @@ const ShowTeacher = () => {
       });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleAddButtonClick = () => {
+    if (batches.length === 0 || courses.length === 0) {
+      setAlertMessage("Please create batches and courses first.");
+      setAlertSeverity("warning");
+      setAlertOpen(true);
+    } else {
+      setOpenAddAndUpdateModal(true);
     }
   };
 
@@ -221,11 +235,27 @@ const ShowTeacher = () => {
           Successfully updated
         </Alert>
       </Snackbar>
+      
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={3000}
+        onClose={() => setAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity={alertSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+
       <div className="mx-10">
         <h2 className="text-4xl my-2 font-semibold">Teachers</h2>
         <Button
           variant="outlined"
-          onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
+          onClick={handleAddButtonClick}
         >
           <FaPlus className="mx-2" />
           Add
@@ -299,7 +329,7 @@ const ShowTeacher = () => {
                 onChange={(e) => setData({ ...data, batchId: e.target.value })}
               >
                 {batches.map((batch) => (
-                  <MenuItem key={batch.id} value={batch.id}>
+                  <MenuItem key={batch._id} value={batch._id}>
                     {batch.name}
                   </MenuItem>
                 ))}
@@ -312,7 +342,7 @@ const ShowTeacher = () => {
                 onChange={(e) => setData({ ...data, courseId: e.target.value })}
               >
                 {courses.map((course) => (
-                  <MenuItem key={course.id} value={course.id}>
+                  <MenuItem key={course._id} value={course._id}>
                     {course.name}
                   </MenuItem>
                 ))}
@@ -320,7 +350,6 @@ const ShowTeacher = () => {
             </div>
 
             <div
-              className=""
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -331,11 +360,10 @@ const ShowTeacher = () => {
                 onClick={() => {
                   if (update) {
                     updateTeacher();
-                    setOpenAddAndUpdateModal(false);
                   } else {
                     addTeacher();
-                    setOpenAddAndUpdateModal(false);
                   }
+                  setOpenAddAndUpdateModal(false);
                 }}
                 variant="contained"
                 sx={{ width: "100%" }}
@@ -377,7 +405,6 @@ const ShowTeacher = () => {
           >
             <h2>Do you want to delete this teacher?</h2>
             <div
-              className=""
               style={{
                 display: "flex",
                 justifyContent: "center",

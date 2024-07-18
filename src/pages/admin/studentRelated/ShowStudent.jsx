@@ -8,6 +8,8 @@ import {
   Paper,
   Select,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
@@ -36,6 +38,9 @@ const ShowStudents = () => {
   const [batches, setBatches] = useState([]);
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [id, setId] = useState(null);
   const imgFileRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -156,6 +161,12 @@ const ShowStudents = () => {
         campusId,
       });
       getAllStudents();
+
+      setOpenAddAndUpdateModal(false);
+
+      setAlertMessage("Successfully added");
+      setAlertSeverity("success");
+      setAlertOpen(true);
     } catch (error) {
       console.log(error.response);
     }
@@ -172,6 +183,16 @@ const ShowStudents = () => {
     }
   };
 
+  const handleAddButtonClick = () => {
+    if (batches.length === 0 || courses.length === 0) {
+      setAlertMessage("Please create batches and courses before adding a student.");
+      setAlertSeverity("warning");
+      setAlertOpen(true);
+    } else {
+      setOpenAddAndUpdateModal(true);
+    }
+  };
+
   return (
     <>
       <div className="mx-10">
@@ -179,7 +200,7 @@ const ShowStudents = () => {
         <Button
           variant="outlined"
           className=""
-          onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
+          onClick={handleAddButtonClick}
         >
           <FaPlus className="mx-2" />
           Add
@@ -205,7 +226,6 @@ const ShowStudents = () => {
         />
 
         {/* ADDING QUALIFICATION MODAL */}
-
         <Modal
           open={openAddAndUpdateModal}
           sx={{
@@ -393,56 +413,22 @@ const ShowStudents = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE MODAL */}
-        <Modal
-          open={openDeleteModal}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+        <Snackbar
+        open={alertOpen}
+        autoHideDuration={3000}
+        onClose={() => setAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity={alertSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
         >
-          <Paper
-            sx={{
-              width: "60%",
-              p: 5,
-              display: "grid",
-              justifyContent: "center",
-              border: "3px solid",
-              borderColor: "primary.main",
-              borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
-            }}
-          >
-            <h2>Do you want to delete this Qualification type?</h2>
-            <div
-              className=""
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "20px",
-              }}
-            >
-              <Button
-                onClick={"deleteQualification"}
-                variant="contained"
-                // sx={{ width: "50%"}}
-              >
-                YES
-              </Button>
-              <Button
-                // sx={{ width: "50%" }}
-                color="error"
-                onClick={() => {
-                  setOpenDeleteModal(false);
-                }}
-              >
-                cancel
-              </Button>
-            </div>
-          </Paper>
-        </Modal>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+
+
       </div>
     </>
   );
