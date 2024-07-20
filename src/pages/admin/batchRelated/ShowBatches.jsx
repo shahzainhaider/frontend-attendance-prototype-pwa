@@ -21,9 +21,7 @@ const ShowBatches = () => {
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
   const [id, setId] = useState(null);
-  const [addAlertOpen, setAddAlertOpen] = useState(false);
-  const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
-  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [alert, setAlert] = useState({ open: false, type: "", message: "" });
 
   useEffect(() => {
     getAllBatches();
@@ -36,31 +34,28 @@ const ShowBatches = () => {
       headerName: "Action",
       align: "center",
       renderCell: (params) => (
-        <>
-          <Grid columnSpacing={{ xs: 5, sm: 5, md: 5 }}>
-            <Button
-              color="error"
-              onClick={() => {
-                setId(params.row.id);
-                setOpenDeleteModal(!openDeleteModal);
-              }}
-            >
-              <MdDelete style={{ fontSize: "larger" }} />
-            </Button>
-            <Button
-              color="success"
-              onClick={() => {
-                setOpenAddAndUpdateModal(true);
-                setUpdate(true);
-                setId(params.row.id);
-                let id = params.row.id;
-                getSingleBatch(id);
-              }}
-            >
-              <FaRegEdit />
-            </Button>
-          </Grid>
-        </>
+        <Grid columnSpacing={{ xs: 5, sm: 5, md: 5 }}>
+          <Button
+            color="error"
+            onClick={() => {
+              setId(params.row.id);
+              setOpenDeleteModal(true);
+            }}
+          >
+            <MdDelete style={{ fontSize: "larger" }} />
+          </Button>
+          <Button
+            color="success"
+            onClick={() => {
+              setOpenAddAndUpdateModal(true);
+              setUpdate(true);
+              setId(params.row.id);
+              getSingleBatch(params.row.id);
+            }}
+          >
+            <FaRegEdit />
+          </Button>
+        </Grid>
       ),
     },
     {
@@ -74,7 +69,7 @@ const ShowBatches = () => {
   const getAllBatches = async () => {
     try {
       let res = await axios.get(`/getAllBatch/${campusId}`);
-      setBatches(res.data);
+      setBatches(res.data.reverse());
     } catch (error) {
       console.log(error);
     }
@@ -84,7 +79,11 @@ const ShowBatches = () => {
     try {
       const updated = await axios.patch(`/updateBatch/${id}`, data);
       getAllBatches();
-      setUpdateAlertOpen(true); // Show update alert
+      setAlert({
+        open: true,
+        type: "success",
+        message: "Successfully updated",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -95,75 +94,50 @@ const ShowBatches = () => {
       setOpenDeleteModal(false);
       const updated = await axios.delete(`/deleteBatch/${id}`);
       getAllBatches();
-      setDeleteAlertOpen(true); // Show delete alert
+      setAlert({ open: true, type: "error", message: "Successfully deleted" });
     } catch (error) {
       console.log(error);
     }
   };
 
   const addBatch = async () => {
-    setAddAlertOpen(true); // Show add alert
     try {
       let a = await axios.post("/api/addBatch", data);
-      console.log(data);
-      getAllBatches();
+      setBatches([a.data.data, ...batches]);
+      setAlert({ open: true, type: "success", message: "Successfully added" });
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
   const getSingleBatch = async (id) => {
     try {
       let res = await axios.get(`/getSingleBatch/${id}`);
-      console.log(res);
       setData({ ...data, name: res.data.name });
     } catch (error) {
       console.log(error);
     }
   };
 
+  const handleAlertClose = () => {
+    setAlert({ ...alert, open: false });
+  };
+
   return (
     <>
       <Snackbar
-        open={addAlertOpen}
+        open={alert.open}
         autoHideDuration={2000}
-        onClose={() => setAddAlertOpen(false)}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
-          onClose={() => setAddAlertOpen(false)}
-          severity={"success"}
+          onClose={handleAlertClose}
+          severity={alert.type}
           variant="filled"
           sx={{ width: "100%" }}
         >
-          Successfully added
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={updateAlertOpen}
-        autoHideDuration={2000}
-        onClose={() => setUpdateAlertOpen(false)}
-      >
-        <Alert
-          onClose={() => setUpdateAlertOpen(false)}
-          severity={"success"}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          Successfully updated
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={deleteAlertOpen}
-        autoHideDuration={2000}
-        onClose={() => setDeleteAlertOpen(false)}
-      >
-        <Alert
-          onClose={() => setDeleteAlertOpen(false)}
-          severity={"error"}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          Successfully deleted
+          {alert.message}
         </Alert>
       </Snackbar>
       <div className="mx-10">
