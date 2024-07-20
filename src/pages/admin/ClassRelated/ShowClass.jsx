@@ -13,11 +13,15 @@ import {
   CircularProgress,
   Typography,
   Checkbox,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { CgMenuGridO } from "react-icons/cg";
 import { MdDelete } from "react-icons/md";
@@ -29,17 +33,16 @@ const ShowClass = () => {
   const [openAddAndUpdateModal, setOpenAddAndUpdateModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    days: [],
+    timing: "",
     batchId: "",
     courseId: "",
-    contact: null,
-    image: null,
     campusId,
   });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
   const [Classes, setClasses] = useState([]);
   const [courses, setCourses] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -152,6 +155,8 @@ const ShowClass = () => {
   };
 
   const handleAddClass = async () => {
+    console.log(data);
+    return;
     try {
       await axios.post(`/ClassReg`, data);
       setData({
@@ -189,9 +194,6 @@ const ShowClass = () => {
     }
   };
 
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -200,31 +202,33 @@ const ShowClass = () => {
         maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
         width: 250,
       },
-},
-};
+    },
+  };
 
-const options = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+  const options = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
+  // const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  // const handleChange = (event) => {
+  // console.log(event.target.value)
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedOptions(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  }
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setSelectedOptions(
+  //     // On autofill we get a stringified value.
+  //     typeof value === "string" ? value.split(",") : value
+  //   );
+  //   console.log(selectedOptions)
+  // };
 
   return (
     <>
@@ -280,9 +284,7 @@ const options = [
             </Typography>
 
             {/* Form Inputs */}
-            <div className="flex gap-20">
-              {/* Add more fields as needed */}
-            </div>
+            <div className="flex gap-20">{/* Add more fields as needed */}</div>
             <div className="flex gap-10 mb-6">
               {/* <TextField
                 value={data.days}
@@ -293,45 +295,35 @@ const options = [
                 variant="outlined"
               /> */}
 
-              <FormControl sx={{ width: 500 }}>
-                    <InputLabel id="mutiple-checkbox-label">Select Days</InputLabel>
-                    <Select
-                      labelId="mutiple-checkbox-label"
-                      id="mutiple-checkbox"
-                      multiple
-                      value={selectedOptions}
-                      onChange={handleChange}
-                      renderValue={(selected) => selected.join(", ")}
-                      MenuProps={MenuProps}
-                    >
-                      {options.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          <Checkbox checked={selectedOptions.indexOf(option) > -1} />
-                          <ListItemText primary={option} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-
+              <FormControl fullWidth >
+                <InputLabel id="mutiple-checkbox-label">Select Days</InputLabel>
+                <Select
+                  labelId="mutiple-checkbox-label"
+                  id="mutiple-checkbox"
+                  multiple
+                  value={data.days}
+                  onChange={(e) => setData({ ...data, days: e.target.value })}
+                  renderValue={(selected) => selected.join(", ")}
+                  MenuProps={MenuProps}
+                >
+                  {options.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      <Checkbox checked={data.days.indexOf(option) > -1} />
+                      <ListItemText primary={option} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
-            
+
             <div className="flex mb-6 gap-6">
-            <TextField
-                value={data.startTime}
-                onChange={(e) => setData({ ...data, startTime: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Start Timing"
-                variant="outlined"
-              />
-              <TextField
-                  value={data.endTime}
-                  onChange={(e) => setData({ ...data, endTime: e.target.value })}
-                  fullWidth
-                  id="outlined-basic"
-                  label="End Timing"
-                  variant="outlined"
-                />
+              {/*  */}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <TimePicker value={startTime} onChange={(e)=>setStartTime(e.target.value)} label="Basic time picker" />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <TimePicker value={endTime} onChange={(e)=>setEndTime(e.target.value)} label="Basic time picker" />
+              </LocalizationProvider>
             </div>
 
             <div className="flex gap-6">
@@ -340,9 +332,7 @@ const options = [
                 select
                 label="Select Batch"
                 value={data.batchId}
-                onChange={(e) =>
-                  setData({ ...data, batchId: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, batchId: e.target.value })}
               >
                 {batches.map((batch) => (
                   <MenuItem key={batch.id} value={batch.id}>
@@ -355,9 +345,7 @@ const options = [
                 select
                 label="Select Course"
                 value={data.courseId}
-                onChange={(e) =>
-                  setData({ ...data, courseId: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, courseId: e.target.value })}
               >
                 {courses.map((course) => (
                   <MenuItem key={course.id} value={course.id}>
