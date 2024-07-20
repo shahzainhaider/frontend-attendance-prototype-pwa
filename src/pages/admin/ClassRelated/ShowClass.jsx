@@ -34,7 +34,7 @@ const ShowClass = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [data, setData] = useState({
     days: [],
-    timing: "",
+    timing: [],
     batchId: "",
     courseId: "",
     campusId,
@@ -49,7 +49,6 @@ const ShowClass = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [id, setId] = useState(null);
-  const imgFileRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -158,7 +157,7 @@ const ShowClass = () => {
     console.log(data);
     return;
     try {
-      await axios.post(`/ClassReg`, data);
+      await axios.post(`/ClassReg`, {...data, timing:[...timing, startTime , endTime]});
       setData({
         name: "",
         email: "",
