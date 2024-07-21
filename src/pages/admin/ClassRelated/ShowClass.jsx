@@ -155,17 +155,13 @@ const ShowClass = () => {
 
   const handleAddClass = async () => {
     console.log(data);
-    return;
     try {
-      await axios.post(`/ClassReg`, {...data, timing:[...timing, startTime , endTime]});
+      await axios.post(`/addClass`, {...data, timing:[startTime , endTime]});
       setData({
-        name: "",
-        email: "",
-        password: "",
+        days: [],
+        timing: [],
         batchId: "",
         courseId: "",
-        contact: null,
-        image: null,
         campusId,
       });
       getAllClasses();
@@ -193,17 +189,6 @@ const ShowClass = () => {
     }
   };
 
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
   const options = [
     "Monday",
     "Tuesday",
@@ -214,20 +199,6 @@ const ShowClass = () => {
     "Sunday",
   ];
 
-  // const [selectedOptions, setSelectedOptions] = useState([]);
-
-  // const handleChange = (event) => {
-  // console.log(event.target.value)
-
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setSelectedOptions(
-  //     // On autofill we get a stringified value.
-  //     typeof value === "string" ? value.split(",") : value
-  //   );
-  //   console.log(selectedOptions)
-  // };
 
   return (
     <>
@@ -285,14 +256,6 @@ const ShowClass = () => {
             {/* Form Inputs */}
             <div className="flex gap-20">{/* Add more fields as needed */}</div>
             <div className="flex gap-10 mb-6">
-              {/* <TextField
-                value={data.days}
-                onChange={(e) => setData({ ...data, days: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Days"
-                variant="outlined"
-              /> */}
 
               <FormControl fullWidth >
                 <InputLabel id="mutiple-checkbox-label">Select Days</InputLabel>
@@ -303,7 +266,6 @@ const ShowClass = () => {
                   value={data.days}
                   onChange={(e) => setData({ ...data, days: e.target.value })}
                   renderValue={(selected) => selected.join(", ")}
-                  MenuProps={MenuProps}
                 >
                   {options.map((option) => (
                     <MenuItem key={option} value={option}>
