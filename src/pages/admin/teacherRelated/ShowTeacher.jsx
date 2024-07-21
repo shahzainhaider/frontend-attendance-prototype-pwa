@@ -296,7 +296,8 @@ const ShowTeacher = () => {
               {update ? "Update Teacher" : "Add Teacher"}
             </h2>
 
-            <div className="flex flex-col gap-10 mb-6">
+            <div className="flex flex-col gap-10 mb-6 mt-6">
+              <div className="flex gap-10 items-center">
               <TextField
                 value={data.name}
                 onChange={(e) => setData({ ...data, name: e.target.value })}
@@ -306,11 +307,20 @@ const ShowTeacher = () => {
                 variant="outlined"
               />
               <TextField
+                value={data.class}
+                onChange={(e) => setData({ ...data, class: e.target.value })}
+                fullWidth
+                id="outlined-basic"
+                label="Enter Class"
+                variant="outlined"
+              />
+              </div>
+              <TextField
                 value={data.email}
                 onChange={(e) => setData({ ...data, email: e.target.value })}
                 fullWidth
                 id="outlined-basic"
-                label="Enter email"
+                label="Enter Email"
                 variant="outlined"
               />
               <TextField
@@ -318,35 +328,10 @@ const ShowTeacher = () => {
                 onChange={(e) => setData({ ...data, password: e.target.value })}
                 fullWidth
                 id="outlined-basic"
-                label="Enter password"
+                label="Enter Password"
                 variant="outlined"
               />
-              <TextField
-                fullWidth
-                select
-                label="Select batch"
-                value={data.batchId}
-                onChange={(e) => setData({ ...data, batchId: e.target.value })}
-              >
-                {batches.map((batch) => (
-                  <MenuItem key={batch._id} value={batch._id}>
-                    {batch.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                fullWidth
-                select
-                label="Select course"
-                value={data.courseId}
-                onChange={(e) => setData({ ...data, courseId: e.target.value })}
-              >
-                {courses.map((course) => (
-                  <MenuItem key={course._id} value={course._id}>
-                    {course.name}
-                  </MenuItem>
-                ))}
-              </TextField>
+              
             </div>
 
             <div
