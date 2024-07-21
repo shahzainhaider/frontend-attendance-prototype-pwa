@@ -159,14 +159,7 @@ const ShowStudents = () => {
         image: null,
         campusId,
       });
-      setStudents([res.data.data, ...students]);
-
-
-      setOpenAddAndUpdateModal(false);
-
-      setAlertMessage("Successfully added");
-      setAlertSeverity("success");
-      setAlertOpen(true);
+      getAllStudents();
     } catch (error) {
       console.log(error.response);
     }
@@ -183,23 +176,15 @@ const ShowStudents = () => {
     }
   };
 
-  const handleAddButtonClick = () => {
-    if (batches.length === 0 || courses.length === 0) {
-      setAlertMessage(
-        "Please create batches and courses before adding a student."
-      );
-      setAlertSeverity("warning");
-      setAlertOpen(true);
-    } else {
-      setOpenAddAndUpdateModal(true);
-    }
-  };
-
   return (
     <>
       <div className="mx-10">
         <h2 className="text-4xl my-2 font-semibold">Students</h2>
-        <Button variant="outlined" className="" onClick={handleAddButtonClick}>
+        <Button
+          variant="outlined"
+          className=""
+          onClick={() => setOpenAddAndUpdateModal(!openAddAndUpdateModal)}
+        >
           <FaPlus className="mx-2" />
           Add
         </Button>
@@ -411,20 +396,56 @@ const ShowStudents = () => {
           </Paper>
         </Modal>
 
-        <Snackbar
-          open={alertOpen}
-          autoHideDuration={3000}
-          onClose={() => setAlertOpen(false)}
+        {/* DELETE MODAL */}
+        <Modal
+          open={openDeleteModal}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <Alert
-            onClose={() => setAlertOpen(false)}
-            severity={alertSeverity}
-            variant="filled"
-            sx={{ width: "100%" }}
+          <Paper
+            sx={{
+              width: "60%",
+              p: 5,
+              display: "grid",
+              justifyContent: "center",
+              border: "3px solid",
+              borderColor: "primary.main",
+              borderRadius: "50px 0% 50px 0%",
+              gridTemplateRows: "2fr 2fr",
+            }}
           >
-            {alertMessage}
-          </Alert>
-        </Snackbar>
+            <h2>Do you want to delete this Qualification type?</h2>
+            <div
+              className=""
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "20px",
+              }}
+            >
+              <Button
+                onClick={"deleteQualification"}
+                variant="contained"
+                // sx={{ width: "50%"}}
+              >
+                YES
+              </Button>
+              <Button
+                // sx={{ width: "50%" }}
+                color="error"
+                onClick={() => {
+                  setOpenDeleteModal(false);
+                }}
+              >
+                cancel
+              </Button>
+            </div>
+          </Paper>
+        </Modal>
       </div>
     </>
   );

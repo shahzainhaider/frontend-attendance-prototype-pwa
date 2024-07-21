@@ -17,12 +17,16 @@ import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import SupervisorAccountOutlinedIcon from "@mui/icons-material/SupervisorAccountOutlined";
 import ReportIcon from "@mui/icons-material/Report";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import SchoolIcon from '@mui/icons-material/School';
 
 const SideBar = () => {
   const location = useLocation();
   return (
     <>
       <React.Fragment>
+
+      {/* -------Home-------- */}
+
         <ListItemButton component={Link} to="/" className="gap-8 !pr-0 ">
           <ListItemIcon className="!min-w-fit">
             <HomeIcon
@@ -35,6 +39,9 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Home" />
         </ListItemButton>
+
+        {/* ---------Batches-------- */}
+
         <ListItemButton
           component={Link}
           to="/Admin/batches"
@@ -52,6 +59,8 @@ const SideBar = () => {
           <ListItemText primary="Batches" />
         </ListItemButton>
 
+        {/* -------Courses-------- */}
+
         <ListItemButton
           component={Link}
           to="/Admin/subjects"
@@ -68,6 +77,30 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Courses" />
         </ListItemButton>
+
+        {/* -------------Classes----------- */}
+        
+        <ListItemButton
+          component={Link}
+          to="/Admin/classes"
+          className="gap-8 !pr-0"
+        >
+          <ListItemIcon className="!min-w-fit">
+            <SchoolIcon
+              color={
+                location.pathname.startsWith("/Admin/classes")
+                  ? "primary"
+                  : "inherit"
+              }
+            />
+          </ListItemIcon>
+          <ListItemText primary="Classes" />
+        
+        </ListItemButton>
+
+        
+        {/* *********Teachers*****    */}
+
         <ListItemButton
           component={Link}
           to="/Admin/teachers"
@@ -84,12 +117,15 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Teachers" />
         </ListItemButton>
+
+        {/* -----------Students------------ */}
+
         <ListItemButton
           component={Link}
           to="/Admin/students"
           className="gap-8 !pr-0"
         >
-          <ListItemIcon className="!min-w-fit">
+        <ListItemIcon className="!min-w-fit">
             <PersonOutlineIcon
               color={
                 location.pathname.startsWith("/Admin/students")
@@ -100,6 +136,9 @@ const SideBar = () => {
           </ListItemIcon>
           <ListItemText primary="Students" />
         </ListItemButton>
+
+        {/* ------------Notices--------------- */}
+
         <ListItemButton
           component={Link}
           to="/Admin/notices"
@@ -115,7 +154,13 @@ const SideBar = () => {
             />
           </ListItemIcon>
           <ListItemText primary="Notices" />
+          
+              {/* ....................... */}
+          
         </ListItemButton>
+
+        {/* ------------Complains-------------- */}
+
         <ListItemButton
           component={Link}
           to="/Admin/complains"
@@ -131,8 +176,13 @@ const SideBar = () => {
             />
           </ListItemIcon>
           <ListItemText primary="Complains" />
+        
         </ListItemButton>
+
+
+
       </React.Fragment>
+
       <Divider sx={{ my: 1 }} />
       <React.Fragment>
         <ListSubheader component="div" inset>
@@ -161,6 +211,8 @@ const SideBar = () => {
           <ListItemText primary="Logout" />
         </ListItemButton>
       </React.Fragment>
+
+
     </>
   );
 };

@@ -20,6 +20,8 @@ import ShowCourses from "./CourseRelated/ShowCourse";
 import ShowTeachers from "./teacherRelated/ShowTeacher";
 import ShowStudents from "./studentRelated/ShowStudent";
 import ViewAttendance from "./studentRelated/ViewAttendance";
+import ShowClass from "./ClassRelated/ShowClass"
+
 
 const AdminDashboard = ({setRole}) => {
   const [open, setOpen] = useState(false);
@@ -95,6 +97,10 @@ const AdminDashboard = ({setRole}) => {
 
             {/* Subject */}
             <Route path="/Admin/subjects" element={<ShowCourses />} />
+
+
+            <Route path="/Admin/classes" element={<ShowClass />} />
+
             {/* <Route
               path="/Admin/subjects/subject/:classID/:subjectID"
               element={<ViewSubject />}

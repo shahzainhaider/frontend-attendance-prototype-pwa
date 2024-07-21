@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useSpeechSynthesis } from "react-speech-kit";
 import { FaRegEdit } from "react-icons/fa";
-import moment from "moment-timezone";
+// import moment from "moment-timezone";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 
