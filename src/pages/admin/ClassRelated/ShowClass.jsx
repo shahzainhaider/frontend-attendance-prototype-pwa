@@ -18,7 +18,6 @@ import {
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
@@ -41,8 +40,8 @@ const ShowClass = () => {
   });
   const [update, setUpdate] = useState(false);
   const [batches, setBatches] = useState([]);
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [Classes, setClasses] = useState([]);
   const [courses, setCourses] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -92,33 +91,37 @@ const ShowClass = () => {
       ),
     },
     {
-      field: "rollNum",
+      field: "batch",
       width: 180,
-      headerName: "Roll Number",
-      align: "center",
+      headerName: "batch",
+      align: "left",
     },
     {
-      field: "name",
+      field: "course",
       width: 180,
-      headerName: "Name",
-      align: "center",
+      headerName: "Course",
+      align: "left",
     },
     {
-      field: "details",
-      headerName: "Details",
-      width: 180,
+      field: "days",
+      headerName: "Days",
+      flex: 1,
+      // width: 180,
       align: "left",
       renderCell: (params) => (
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<CgMenuGridO />}
-          onClick={() => {
-            navigate(`/Admin/Classes/attendance/${params.row.id}`);
-          }}
-        >
-          Attendance
-        </Button>
+        <p >
+        {params.row.days.join(", ")}
+      </p>
+      ),
+    },
+    {
+      field: "timing",
+      headerName: "Timing",
+      width: 180,
+      flex:1,
+      align: "left",
+      renderCell: (params) => (
+        <p>{params.row.timing.join(" To ")}</p>
       ),
     },
   ];
@@ -145,6 +148,7 @@ const ShowClass = () => {
     try {
       setLoading(true);
       const res = await axios.get(`/getClasses/${campusId}`);
+      console.log(res.data)
       setClasses(res.data.reverse());
       setLoading(false);
     } catch (error) {
@@ -153,10 +157,31 @@ const ShowClass = () => {
     }
   };
 
+  const convertTo12HourFormat = (time24hr) => {
+    const [hours, minutes] = time24hr.split(':');
+    let period = 'AM';
+    let hours12 = parseInt(hours, 10);
+  
+    if (hours12 > 12) {
+      hours12 -= 12;
+      period = 'PM';
+    } else if (hours12 === 12) {
+      period = 'PM';
+    } else if (hours12 === 0) {
+      hours12 = 12; // 12 AM
+    }
+  
+    return `${hours12}:${minutes} ${period}`;
+  };
+
   const handleAddClass = async () => {
-    console.log(data);
-    try {
-      await axios.post(`/addClass`, {...data, timing:[startTime , endTime]});
+  const startTime12hr = convertTo12HourFormat(startTime);
+  const endTime12hr = convertTo12HourFormat(endTime);
+
+  console.log(startTime12hr , endTime12hr)
+
+  try {
+    await axios.post(`/addClass`, { ...data, timing: [startTime12hr, endTime12hr] });
       setData({
         days: [],
         timing: [],
@@ -216,7 +241,7 @@ const ShowClass = () => {
           className="bg-white"
           rows={Classes}
           columns={columns}
-          components={{ Toolbar: GridToolbar }}
+          slots={{ toolbar: GridToolbar }}
           loading={loading}
           sx={{
             width: "100%",
@@ -277,10 +302,10 @@ const ShowClass = () => {
             <div className="flex mb-6 gap-6">
               {/*  */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <TimePicker value={startTime} onChange={(e)=>setStartTime(e.target.value)} label="Basic time picker" />
+                  <TimePicker  onChange={(e)=>setStartTime(`${e.hour()}:${e.minute()}`)} label="Start Time" />
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <TimePicker value={endTime} onChange={(e)=>setEndTime(e.target.value)} label="Basic time picker" />
+                  <TimePicker onChange={(e)=>setEndTime(`${e.hour()}:${e.minute()}`)} label="End Time" />
               </LocalizationProvider>
             </div>
 
