@@ -212,21 +212,18 @@ const ShowClass = () => {
           Add
         </Button>
 
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <DataGrid
-            className="bg-white"
-            rows={Classes}
-            columns={columns}
-            components={{ Toolbar: GridToolbar }}
-            sx={{
-              width: "100%",
-              height: "35em",
-              marginTop: 2,
-            }}
-          />
-        )}
+        <DataGrid
+          className="bg-white"
+          rows={Classes}
+          columns={columns}
+          components={{ Toolbar: GridToolbar }}
+          loading={loading}
+          sx={{
+            width: "100%",
+            height: "35em",
+            marginTop: 2,
+          }}
+        />
 
         {/* ADDING CLASS MODAL */}
         <Modal
@@ -315,7 +312,9 @@ const ShowClass = () => {
                 ))}
               </TextField>
             </div>
+            
 
+            {/* Buttons */}
             <div
               className="mt-6"
               style={{
@@ -345,9 +344,10 @@ const ShowClass = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE CLASS MODAL */}
+        {/* DELETE CONFIRMATION MODAL */}
         <Modal
           open={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -356,20 +356,20 @@ const ShowClass = () => {
         >
           <Paper
             sx={{
-              width: "40%",
+              width: "30%",
               p: 5,
-              display: "grid",
-              justifyContent: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               border: "3px solid",
-              borderColor: "primary.main",
-              borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
+              borderColor: "error.main",
+              borderRadius: "10px",
             }}
           >
-            <Typography variant="h4" component="h2">
+            <Typography variant="h6" component="h2">
               Are you sure you want to delete this class?
             </Typography>
-            <div className="flex justify-self-center self-center my-3">
+            <div className="flex justify-end mt-4 gap-4">
               <Button
                 variant="contained"
                 color="error"
@@ -378,9 +378,8 @@ const ShowClass = () => {
                 Delete
               </Button>
               <Button
-                className="ml-2"
-                variant="contained"
-                color="primary"
+                variant="outlined"
+                color="secondary"
                 onClick={() => setOpenDeleteModal(false)}
               >
                 Cancel
@@ -389,6 +388,7 @@ const ShowClass = () => {
           </Paper>
         </Modal>
 
+        {/* ALERT SNACKBAR */}
         <Snackbar
           open={alertOpen}
           autoHideDuration={6000}

@@ -234,9 +234,8 @@ const ShowStudents = () => {
             </h2>
 
             {/* Inputs start here */}
-            <div className="flex gap-20">
               <div className="flex gap-10 mb-6">
-                <TextField
+              <TextField
                   value={data.name}
                   onChange={(e) => setData({ ...data, name: e.target.value })}
                   fullWidth
@@ -244,8 +243,6 @@ const ShowStudents = () => {
                   label="Name"
                   variant="outlined"
                 />
-              </div>
-              <div className="flex gap-10 mb-6">
                 <TextField
                   value={data.contact}
                   onChange={(e) =>
@@ -257,7 +254,7 @@ const ShowStudents = () => {
                   variant="outlined"
                 />
               </div>
-            </div>
+            
             <div className="flex gap-10 mb-6">
               <TextField
                 value={data.email}
@@ -267,8 +264,6 @@ const ShowStudents = () => {
                 label="Email"
                 variant="outlined"
               />
-            </div>
-            <div className="flex gap-10 mb-6">
               <TextField
                 value={data.password}
                 onChange={(e) => setData({ ...data, password: e.target.value })}
@@ -278,42 +273,22 @@ const ShowStudents = () => {
                 variant="outlined"
               />
             </div>
-            <div className="flex gap-6">
-              <div className="flex gap-10 mb-6 w-full">
-                <TextField
-                  fullWidth
-                  select
-                  label="Select Batch"
-                  value={data.batchId}
-                  onChange={(e) =>
-                    setData({ ...data, batchId: e.target.value })
-                  }
-                >
-                  {batches.map((batch) => (
-                    <MenuItem key={batch.id} value={batch.id}>
-                      {batch.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
-              <div className="flex gap-10 mb-6 w-full">
-                <TextField
-                  fullWidth
-                  select
-                  label="Select Course"
-                  value={data.courseId}
-                  onChange={(e) =>
-                    setData({ ...data, courseId: e.target.value })
-                  }
-                >
-                  {courses.map((course) => (
-                    <MenuItem key={course.id} value={course.id}>
-                      {course.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </div>
+
+            {/* <div className="flex gap-10 mb-6">
+            </div> */}
+
+            <div className="flex gap-10 mb-6">
+              <TextField
+                value={data.class}
+                onChange={(e) => setData({ ...data, class: e.target.value })}
+                fullWidth
+                id="outlined-basic"
+                label="Class"
+                variant="outlined"
+              />
             </div>
+
+            
             {/* Inputs end here */}
 
             <div
