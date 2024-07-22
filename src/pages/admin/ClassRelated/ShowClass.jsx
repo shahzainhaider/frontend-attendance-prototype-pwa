@@ -18,10 +18,10 @@ import {
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { CgMenuGridO } from "react-icons/cg";
 import { MdDelete } from "react-icons/md";
@@ -241,21 +241,18 @@ const ShowClass = () => {
           Add
         </Button>
 
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <DataGrid
-            className="bg-white"
-            rows={Classes}
-            columns={columns}
-            components={{ Toolbar: GridToolbar }}
-            sx={{
-              width: "100%",
-              height: "35em",
-              marginTop: 2,
-            }}
-          />
-        )}
+        <DataGrid
+          className="bg-white"
+          rows={Classes}
+          columns={columns}
+          components={{ Toolbar: GridToolbar }}
+          loading={loading}
+          sx={{
+            width: "100%",
+            height: "35em",
+            marginTop: 2,
+          }}
+        />
 
         {/* ADDING CLASS MODAL */}
         <Modal
@@ -283,16 +280,18 @@ const ShowClass = () => {
             </Typography>
 
             {/* Form Inputs */}
-            <div className="flex gap-20">{/* Add more fields as needed */}</div>
+            <div className="flex gap-20">
+              <TextField
+                  value={data.timing}
+                  onChange={(e) => setData({ ...data, timing: e.target.value })}
+                  fullWidth
+                  id="outlined-basic"
+                  label="Days"
+                  variant="outlined"
+                />
+            </div>
             <div className="flex gap-10 mb-6">
-              {/* <TextField
-                value={data.days}
-                onChange={(e) => setData({ ...data, days: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Days"
-                variant="outlined"
-              /> */}
+              
 
               <FormControl fullWidth >
                 <InputLabel id="mutiple-checkbox-label">Select Days</InputLabel>
@@ -317,12 +316,12 @@ const ShowClass = () => {
 
             <div className="flex mb-6 gap-6">
               {/*  */}
-              {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <TimePicker value={startTime} onChange={(e)=>setStartTime(e.target.value)} label="Basic time picker" />
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <TimePicker value={endTime} onChange={(e)=>setEndTime(e.target.value)} label="Basic time picker" />
-              </LocalizationProvider> */}
+              </LocalizationProvider>
             </div>
 
             <div className="flex gap-6">
@@ -353,7 +352,9 @@ const ShowClass = () => {
                 ))}
               </TextField>
             </div>
+            
 
+            {/* Buttons */}
             <div
               className="mt-6"
               style={{
@@ -383,9 +384,10 @@ const ShowClass = () => {
           </Paper>
         </Modal>
 
-        {/* DELETE CLASS MODAL */}
+        {/* DELETE CONFIRMATION MODAL */}
         <Modal
           open={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -394,20 +396,20 @@ const ShowClass = () => {
         >
           <Paper
             sx={{
-              width: "40%",
+              width: "30%",
               p: 5,
-              display: "grid",
-              justifyContent: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               border: "3px solid",
-              borderColor: "primary.main",
-              borderRadius: "50px 0% 50px 0%",
-              gridTemplateRows: "2fr 2fr",
+              borderColor: "error.main",
+              borderRadius: "10px",
             }}
           >
-            <Typography variant="h4" component="h2">
+            <Typography variant="h6" component="h2">
               Are you sure you want to delete this class?
             </Typography>
-            <div className="flex justify-self-center self-center my-3">
+            <div className="flex justify-end mt-4 gap-4">
               <Button
                 variant="contained"
                 color="error"
@@ -416,9 +418,8 @@ const ShowClass = () => {
                 Delete
               </Button>
               <Button
-                className="ml-2"
-                variant="contained"
-                color="primary"
+                variant="outlined"
+                color="secondary"
                 onClick={() => setOpenDeleteModal(false)}
               >
                 Cancel
@@ -427,6 +428,7 @@ const ShowClass = () => {
           </Paper>
         </Modal>
 
+        {/* ALERT SNACKBAR */}
         <Snackbar
           open={alertOpen}
           autoHideDuration={6000}
