@@ -30,6 +30,7 @@ const ShowTeacher = () => {
   const [batches, setBatches] = useState([]);
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [Classes, setClasses] = useState([]);
   const [addAlertOpen, setAddAlertOpen] = useState(false);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [updateAlertOpen, setUpdateAlertOpen] = useState(false);
@@ -42,6 +43,8 @@ const ShowTeacher = () => {
     getAllTeachers();
     getAllBatches();
     getAllCourses();
+    getAllClasses();
+
   }, []);
 
   const columns = [
@@ -191,6 +194,19 @@ const ShowTeacher = () => {
     }
   };
 
+  const getAllClasses = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`/getClasses/${campusId}`);
+      console.log(res.data)
+      setClasses(res.data.reverse());
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error.response);
+    }
+  };
+
   return (
     <>
       <Snackbar
@@ -307,13 +323,19 @@ const ShowTeacher = () => {
                 variant="outlined"
               />
               <TextField
-                value={data.class}
-                onChange={(e) => setData({ ...data, class: e.target.value })}
-                fullWidth
-                id="outlined-basic"
-                label="Enter Class"
-                variant="outlined"
-              />
+                  fullWidth
+                  select
+                  label="Select Class"
+                  value={data.class}
+                  onChange={(e) => setData({ ...data, class: e.target.value })}
+              >
+                  {Classes.map((classItem) => (
+                      <MenuItem key={classItem.id} value={classItem.id}>
+                          {`${classItem.batch} ${classItem.course} (${classItem.days}) and timings`}
+                      </MenuItem>
+                  ))}
+              </TextField>
+
               </div>
               <TextField
                 value={data.email}
